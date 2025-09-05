@@ -1,14 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import Navigation from './src/frontend/navigation/Navigation';
 
-const App = () => {
-  return (
-    <View>
-      <Text>App</Text>
-    </View>
-  );
+const App: React.FC = () => {
+  return <Navigation />;
 };
 
 export default App;
-
-const styles = StyleSheet.create({});

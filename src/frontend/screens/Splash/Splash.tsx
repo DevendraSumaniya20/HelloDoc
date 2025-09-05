@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient'; // make sure you installed this
 import Colors from '../../constants/color';
 import { moderateScale } from '../../constants/responsive';
 import { useNavigation } from '@react-navigation/native';
@@ -22,14 +23,28 @@ const Splash = () => {
         index: 0,
         routes: [{ name: navigationStrings.Home }],
       });
-    }, 1200);
+    }, 1500);
     return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Hello Doc</Text>
-      <ActivityIndicator size="large" color={Colors.white} />
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[Colors.primary, Colors.secondary]}
+        style={styles.container}
+      >
+        {/* App Title */}
+        <Text style={styles.title}>Hello Doc</Text>
+        <Text style={styles.subtitle}>Your health, our priority</Text>
+
+        {/* Loader */}
+        <ActivityIndicator
+          size="large"
+          color={Colors.accent}
+          style={{ marginTop: moderateScale(20) }}
+        />
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -39,14 +54,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.black,
   },
   title: {
-    color: Colors.white,
-    fontSize: moderateScale(28),
-    marginBottom: moderateScale(16),
+    color: Colors.neutral,
+    fontSize: moderateScale(32),
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+  },
+  subtitle: {
+    color: Colors.accent,
+    fontSize: moderateScale(16),
+    marginTop: moderateScale(8),
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
 });
 
