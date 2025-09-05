@@ -29,9 +29,8 @@ const Splash = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {/* Gradient Background */}
       <LinearGradient
-        colors={[Colors.primary, Colors.secondary]}
+        colors={[Colors.accent, Colors.secondary]}
         style={styles.container}
       >
         {/* App Title */}
