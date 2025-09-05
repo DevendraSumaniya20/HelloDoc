@@ -39,7 +39,8 @@ const Home: React.FC = () => {
       specialty: 'Chardiologist',
       rating: 4.7,
       reviews: 5,
-      image: 'https://via.placeholder.com/60x60',
+      image:
+        'https://thumbs.dreamstime.com/b/indian-doctor-mature-male-medical-standing-inside-hospital-handsome-model-portrait-43992356.jpg',
       isOnline: true,
     },
     {
@@ -48,7 +49,8 @@ const Home: React.FC = () => {
       specialty: 'Psychologist',
       rating: 4.9,
       reviews: 10,
-      image: 'https://via.placeholder.com/60x60',
+      image:
+        'https://img.freepik.com/free-photo/pleased-young-female-doctor-wearing-medical-robe-stethoscope-around-neck-standing-with-closed-posture_409827-254.jpg',
     },
   ];
 
