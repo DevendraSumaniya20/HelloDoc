@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '../../constants/color';
 
 // Types
 interface Doctor {
@@ -164,10 +165,10 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: Colors.primary,
   },
   header: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
