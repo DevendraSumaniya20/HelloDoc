@@ -19,7 +19,10 @@ const screenOptions: NativeStackNavigationOptions = {
 
 const Navigation: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={styles.container}
+      edges={['top', 'left', 'right', 'bottom']}
+    >
       <NavigationContainer>
         <Suspense fallback={<ActivityIndicator size="large" color="blue" />}>
           <Stack.Navigator
