@@ -17,6 +17,10 @@ const Colors = {
   secondary: '#393E46', // Secondary
   accent: '#00ADB5', // Accent / Highlight
   neutral: '#EEEEEE', // Neutral / Background
+
+  success: '#4CAF50', // Success
+  warning: '#FFC107', // Warning
+  error: '#F44336', // Error
 };
 
 export default Colors;
