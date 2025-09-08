@@ -1,12 +1,18 @@
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'react-native';
+import { AuthProvider } from './src/frontend/hooks/AuthContext';
 import Navigation from './src/frontend/navigation/Navigation';
 
 const App: React.FC = () => {
   return (
-    <SafeAreaProvider>
+    <AuthProvider>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#fff"
+        translucent={false}
+      />
       <Navigation />
-    </SafeAreaProvider>
+    </AuthProvider>
   );
 };
 

@@ -1,32 +1,11 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient'; // make sure you installed this
+import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/color';
 import { moderateScale } from '../../constants/responsive';
-import { useNavigation } from '@react-navigation/native';
-import navigationStrings from '../../constants/navigationString';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types/types';
-
-type SplashScreenNavigation = NativeStackNavigationProp<
-  RootStackParamList,
-  'Splash'
->;
 
 const Splash = () => {
-  const navigation = useNavigation<SplashScreenNavigation>();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: navigationStrings.Home }],
-      });
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [navigation]);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient

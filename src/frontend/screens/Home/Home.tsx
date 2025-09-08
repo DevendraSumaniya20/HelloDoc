@@ -10,24 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeStyle from './HomeStyle';
-
-// Types
-interface Doctor {
-  id: string;
-  name: string;
-  specialty: string;
-  rating: number;
-  reviews: number;
-  image: string;
-  isOnline?: boolean;
-}
-
-interface HealthCategory {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-}
+import { Doctor, HealthCategory } from '../../types/types';
 
 const Home: React.FC = () => {
   // Sample data
