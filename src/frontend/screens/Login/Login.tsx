@@ -18,6 +18,7 @@ import Components from '../../components';
 import Icons from '../../constants/svgPath';
 import auth from '@react-native-firebase/auth';
 import type { RootStackParamList } from '../../types/types';
+import Colors from '../../constants/color';
 
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -239,7 +240,7 @@ const Login: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.white },
   keyboardContainer: { flex: 1 },
   scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
   forgotPassword: { alignSelf: 'flex-end', marginBottom: 30 },

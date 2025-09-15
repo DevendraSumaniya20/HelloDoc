@@ -21,6 +21,7 @@ const Colors = {
   success: '#4CAF50', // Success
   warning: '#FFC107', // Warning
   error: '#F44336', // Error
+  info: '#007AFF',
 };
 
 export default Colors;

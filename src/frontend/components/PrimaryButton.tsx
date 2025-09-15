@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import Colors from '../constants/color';
 
 interface PrimaryButtonProps {
   title: string;
@@ -25,7 +26,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
     disabled={disabled || loading} // disable button when loading
   >
     {loading ? (
-      <ActivityIndicator color="#fff" />
+      <ActivityIndicator color={Colors.white} />
     ) : (
       <Text style={styles.text}>{title}</Text>
     )}
@@ -35,14 +36,14 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     height: 50,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.info,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
   },
-  disabled: { backgroundColor: '#ccc' },
-  text: { fontSize: 16, fontWeight: '600', color: '#fff' },
+  disabled: { backgroundColor: Colors.grayLight },
+  text: { fontSize: 16, fontWeight: '600', color: Colors.white },
 });
 
 export default PrimaryButton;

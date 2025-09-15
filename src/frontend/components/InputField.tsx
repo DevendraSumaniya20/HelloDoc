@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInputProps,
 } from 'react-native';
+import Colors from '../constants/color';
 
 interface InputFieldProps extends TextInputProps {
   label: string;
@@ -31,15 +32,20 @@ const InputField: React.FC<InputFieldProps> = ({
 
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 8 },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.grayMedium,
+    marginBottom: 8,
+  },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.grayLight,
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.grayLight,
   },
 });
 

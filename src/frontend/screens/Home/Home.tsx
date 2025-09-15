@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeStyle from './HomeStyle';
 import { Doctor, HealthCategory } from '../../types/types';
 import { useAuth } from '../../hooks/AuthContext';
+import Colors from '../../constants/color';
 
 const Home: React.FC = () => {
   // Get authenticated user data from AuthContext
@@ -117,7 +118,7 @@ const Home: React.FC = () => {
 
   return (
     <SafeAreaView style={HomeStyle.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.grayDark} />
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={HomeStyle.header}>
@@ -147,7 +148,7 @@ const Home: React.FC = () => {
                   borderRadius: 8,
                 }}
               >
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                <Text style={{ color: Colors.white, fontWeight: 'bold' }}>
                   Logout
                 </Text>
               </TouchableOpacity>

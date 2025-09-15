@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Colors from '../constants/color';
 
 const Divider = () => (
   <View style={styles.container}>
@@ -11,8 +12,8 @@ const Divider = () => (
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row', alignItems: 'center', marginBottom: 30 },
-  line: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
-  text: { marginHorizontal: 16, fontSize: 14, color: '#999' },
+  line: { flex: 1, height: 1, backgroundColor: Colors.grayLight },
+  text: { marginHorizontal: 16, fontSize: 14, color: Colors.grayMedium },
 });
 
 export default Divider;

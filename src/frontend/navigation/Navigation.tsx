@@ -13,6 +13,7 @@ import {
   MainStackParamList,
 } from '../types/types';
 import { useAuth } from '../hooks/AuthContext';
+import Colors from '../constants/color';
 
 // Create separate navigators
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -93,7 +94,7 @@ const Navigation: React.FC = () => {
       <Suspense
         fallback={
           <View style={styles.suspenseContainer}>
-            <ActivityIndicator size="large" color="#007AFF" />
+            <ActivityIndicator size="large" color={Colors.info} />
           </View>
         }
       >
@@ -145,13 +146,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
   },
   suspenseContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: Colors.accent,
   },
 });
 

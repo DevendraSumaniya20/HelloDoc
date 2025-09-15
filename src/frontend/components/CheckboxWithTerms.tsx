@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Colors from '../constants/color';
 
 interface CheckboxWithTermsProps {
   checked: boolean;
@@ -48,17 +49,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 2,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.grayLight,
     borderRadius: 4,
     marginRight: 12,
     marginTop: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  checkboxActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  checkmark: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
-  text: { flex: 1, fontSize: 14, color: '#666', lineHeight: 20 },
-  link: { color: '#007AFF', fontWeight: '500' },
+  checkboxActive: { backgroundColor: Colors.info, borderColor: Colors.info },
+  checkmark: { color: Colors.white, fontSize: 12, fontWeight: 'bold' },
+  text: { flex: 1, fontSize: 14, color: Colors.grayDark, lineHeight: 20 },
+  link: { color: Colors.info, fontWeight: '500' },
 });
 
 export default CheckboxWithTerms;

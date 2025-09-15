@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: '600',
-    color: '#000',
+    color: Colors.black,
   },
   icon: {
     marginRight: moderateScale(6),

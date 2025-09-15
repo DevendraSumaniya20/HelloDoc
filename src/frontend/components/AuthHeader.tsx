@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Colors from '../constants/color';
 
 interface AuthHeaderProps {
   title: string;
@@ -18,10 +19,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: Colors.grayMedium,
     marginBottom: 8,
   },
-  subtitle: { fontSize: 16, color: '#666', textAlign: 'center' },
+  subtitle: { fontSize: 16, color: Colors.grayLight, textAlign: 'center' },
 });
 
 export default AuthHeader;
