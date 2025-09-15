@@ -12,7 +12,20 @@
           "package_name": "com.hellodoc"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "249301927840-kpsdvkeeitov1g600o2gilkb0t9qvj2q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hellodoc",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "249301927840-a5l991cd19kgc2kef8ti566oqfru7pti.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB_bLqCH-de9LTpUfPgsqYk--2Z_sSBpao"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249301927840-a5l991cd19kgc2kef8ti566oqfru7pti.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "249301927840-j5v6j1quor8j6kkml08vjsh8hvumsfk1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.HelloDoc"
+              }
+            }
+          ]
         }
       }
     }

@@ -7,12 +7,17 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeStyle from './HomeStyle';
 import { Doctor, HealthCategory } from '../../types/types';
+import { useAuth } from '../../hooks/AuthContext';
 
 const Home: React.FC = () => {
+  // Get authenticated user data from AuthContext
+  const { user, logout: authLogout } = useAuth();
+
   // Sample data
   const topDoctors: Doctor[] = [
     {
@@ -42,6 +47,42 @@ const Home: React.FC = () => {
     { id: '3', name: 'Neurologist', icon: '🧠', color: '#F0F8FF' },
     { id: '4', name: 'General Surgery', icon: '🏥', color: '#F8F0FF' },
   ];
+
+  // 🔑 Logout function using AuthContext
+  const handleLogout = async () => {
+    try {
+      await authLogout();
+      Alert.alert('Logged Out', 'You have been signed out successfully.');
+      // 👉 If you have navigation, redirect user to Login screen:
+      // navigation.replace("Login");
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
+  };
+
+  // Helper function to get user's first name or display name
+  const getUserDisplayName = () => {
+    if (user?.firstName) {
+      return user.firstName;
+    } else if (user?.displayName) {
+      // Extract first name from display name
+      return user.displayName.split(' ')[0];
+    } else if (user?.email) {
+      // Fallback to email username
+      return user.email.split('@')[0];
+    }
+    return 'User';
+  };
+
+  // Helper function to get profile image
+  const getProfileImage = () => {
+    if (user?.photoURL) {
+      return user.photoURL;
+    }
+    // Fallback to placeholder
+    return 'https://via.placeholder.com/40x40';
+  };
 
   const renderDoctorCard = (doctor: Doctor) => (
     <TouchableOpacity key={doctor.id} style={HomeStyle.doctorCard}>
@@ -82,15 +123,35 @@ const Home: React.FC = () => {
         <View style={HomeStyle.header}>
           <View style={HomeStyle.headerTop}>
             <View>
-              <Text style={HomeStyle.greeting}>Hey, Dev</Text>
+              <Text style={HomeStyle.greeting}>
+                Hey, {getUserDisplayName()}
+              </Text>
               <Text style={HomeStyle.subGreeting}>How Can I Help You?</Text>
             </View>
-            <TouchableOpacity style={HomeStyle.profileButton}>
-              <Image
-                source={{ uri: 'https://via.placeholder.com/40x40' }}
-                style={HomeStyle.profileImage}
-              />
-            </TouchableOpacity>
+
+            {/* Profile + Logout Button */}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity style={HomeStyle.profileButton}>
+                <Image
+                  source={{ uri: getProfileImage() }}
+                  style={HomeStyle.profileImage}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLogout}
+                style={{
+                  marginLeft: 10,
+                  backgroundColor: '#e63946',
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                  Logout
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Search Bar */}

@@ -32,6 +32,8 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Splash: undefined;
+  Home: undefined;
+  Setting: undefined;
 };
 
 // --- Extend React Navigation types globally ---
