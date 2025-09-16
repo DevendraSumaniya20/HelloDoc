@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Colors from '../constants/color';
+import { moderateScale, scale } from '../constants/responsive';
 
 interface FooterLinkProps {
   text: string;
@@ -29,10 +30,10 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingVertical: 30,
+    paddingVertical: moderateScale(30),
   },
-  footerText: { fontSize: 14, color: Colors.grayMedium },
-  linkText: { fontSize: 14, color: Colors.info, fontWeight: '600' },
+  footerText: { fontSize: scale(14), color: Colors.grayMedium },
+  linkText: { fontSize: scale(14), color: Colors.info, fontWeight: '600' },
   disabledText: { color: Colors.grayLight },
 });
 

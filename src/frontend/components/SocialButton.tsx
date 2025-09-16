@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   View,
@@ -15,8 +15,8 @@ interface SocialButtonProps {
   variant: SocialVariant;
   onPress: (event: GestureResponderEvent) => void;
   disabled?: boolean;
-  icon?: React.ReactNode; // Optional icon
-  title?: string; // Optional custom text
+  icon?: React.ReactNode;
+  title?: string;
 }
 
 const SocialButton: React.FC<SocialButtonProps> = ({
@@ -40,18 +40,20 @@ const SocialButton: React.FC<SocialButtonProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.button,
         getButtonStyle(),
         disabled && styles.disabledButton,
+        pressed && !disabled && styles.pressedButton,
       ]}
       onPress={onPress}
       disabled={disabled}
+      android_ripple={{ color: Colors.grayLight }}
     >
       {icon && <View style={styles.icon}>{icon}</View>}
       <Text style={styles.text}>{title || 'Continue'}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -62,10 +64,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: moderateScale(12),
-    paddingHorizontal: moderateScale(12),
-    borderRadius: moderateScale(8),
-    marginVertical: moderateScale(8),
+    paddingHorizontal: moderateScale(16),
+    borderRadius: moderateScale(10),
+    marginVertical: moderateScale(6),
     justifyContent: 'center',
+    shadowColor: Colors.black,
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2, // Android shadow
   },
   borderButton: {
     backgroundColor: Colors.white,
@@ -77,17 +84,27 @@ const styles = StyleSheet.create({
   },
   withIconButton: {
     backgroundColor: Colors.white,
-    borderWidth: 0.2,
-    borderColor: Colors.black,
+    borderWidth: 1,
+    borderColor: Colors.grayLight,
   },
   disabledButton: {
-    opacity: 0.5,
+    backgroundColor: Colors.grayLight,
+    borderColor: Colors.grayLight,
+    opacity: 0.7,
+  },
+  pressedButton: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   text: {
     fontWeight: '600',
+    fontSize: moderateScale(14),
     color: Colors.black,
+    textAlign: 'center',
   },
   icon: {
-    marginRight: moderateScale(6),
+    marginRight: moderateScale(8),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
