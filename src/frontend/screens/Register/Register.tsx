@@ -14,16 +14,8 @@ import Components from '../../components';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import Icons from '../../constants/svgPath';
 
-// Firebase imports
-import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import firestore from '@react-native-firebase/firestore';
-import Navigation from '../../navigation/Navigation';
-import navigationStrings from '../../constants/navigationString';
-
 const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
-  const { setUser } = useAuth(); // Assuming you have setUser in context
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, loginWithGoogle, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -39,91 +31,63 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
 
   const validateForm = (): boolean => {
     const { firstName, lastName, email, password, confirmPassword } = formData;
-    if (!firstName.trim())
-      return Alert.alert('Error', 'Enter first name'), false;
-    if (!lastName.trim()) return Alert.alert('Error', 'Enter last name'), false;
-    if (!email.trim()) return Alert.alert('Error', 'Enter email'), false;
-    if (!validateEmail(email))
-      return Alert.alert('Error', 'Invalid email'), false;
+
+    if (!firstName.trim()) {
+      Alert.alert('Error', 'Enter first name');
+      return false;
+    }
+    if (!lastName.trim()) {
+      Alert.alert('Error', 'Enter last name');
+      return false;
+    }
+    if (!email.trim()) {
+      Alert.alert('Error', 'Enter email');
+      return false;
+    }
+    if (!validateEmail(email)) {
+      Alert.alert('Error', 'Invalid email');
+      return false;
+    }
     const passwordError = validatePassword(password);
-    if (passwordError) return Alert.alert('Error', passwordError), false;
-    if (password !== confirmPassword)
-      return Alert.alert('Error', 'Passwords do not match'), false;
-    if (!acceptTerms)
-      return Alert.alert('Error', 'Please accept terms & conditions'), false;
+    if (passwordError) {
+      Alert.alert('Error', passwordError);
+      return false;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return false;
+    }
+    if (!acceptTerms) {
+      Alert.alert('Error', 'Please accept terms & conditions');
+      return false;
+    }
     return true;
   };
 
-  // Create user profile in Firestore
-  const createUserProfile = async (user: any, additionalData: any = {}) => {
-    try {
-      const userRef = firestore().collection('users').doc(user.uid);
-      const userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        const { firstName, lastName, email } = additionalData;
-        const createdAt = firestore.Timestamp.now();
-
-        await userRef.set({
-          firstName,
-          lastName,
-          email,
-          displayName: `${firstName} ${lastName}`,
-          createdAt,
-          updatedAt: createdAt,
-          ...additionalData,
-        });
-      }
-      return userRef;
-    } catch (error) {
-      console.error('Error creating user profile:', error);
-      throw error;
-    }
-  };
-
+  // ===============================
+  // Email/Password Registration Handler
+  // ===============================
   const handleRegister = async () => {
     if (!validateForm()) return;
 
-    setIsLoading(true);
     try {
-      // Create user with Firebase Auth
-      const userCredential = await auth().createUserWithEmailAndPassword(
-        formData.email.trim().toLowerCase(),
-        formData.password,
-      );
-
-      const user = userCredential.user;
-
-      // Update user profile with display name
-      await user.updateProfile({
-        displayName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
-      });
-
-      // Create user profile in Firestore
-      await createUserProfile(user, {
+      const success = await register({
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
+        password: formData.password,
       });
 
-      // Update auth context
-      setUser({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-      });
-
-      Alert.alert('Welcome!', 'Account created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Home'), // Navigate to home or main screen
-        },
-      ]);
+      if (success) {
+        Alert.alert('Welcome!', 'Account created successfully!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Home'),
+          },
+        ]);
+      }
     } catch (error: any) {
       console.error('Registration error:', error);
-
       let errorMessage = 'Something went wrong. Please try again.';
 
       switch (error.code) {
@@ -147,61 +111,24 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
       }
 
       Alert.alert('Registration Failed', errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // ===============================
+  // Google Sign-In Handler
+  // ===============================
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
     try {
-      // Check if your device supports Google Play
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
+      const success = await loginWithGoogle();
 
-      // Get the users ID token
-      const { idToken, user } = await GoogleSignin.signIn();
-
-      // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      // Sign-in the user with the credential
-      const userCredential = await auth().signInWithCredential(
-        googleCredential,
-      );
-
-      // Split display name for first and last name
-      const displayName = user.name || '';
-      const nameParts = displayName.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      // Create user profile in Firestore
-      await createUserProfile(userCredential.user, {
-        firstName,
-        lastName,
-        email: user.email,
-        photoURL: user.photo,
-        provider: 'google',
-      });
-
-      // Update auth context
-      setUser({
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
-        displayName: userCredential.user.displayName,
-        firstName,
-        lastName,
-        photoURL: userCredential.user.photoURL,
-      });
-
-      Alert.alert('Welcome!', 'Successfully signed in with Google!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate(navigationStrings.Home),
-        },
-      ]);
+      if (success) {
+        Alert.alert('Welcome!', 'Successfully signed in with Google!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Home'),
+          },
+        ]);
+      }
     } catch (error: any) {
       console.error('Google Sign-In error:', error);
 
@@ -212,11 +139,11 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
           'An account already exists with the same email address but different sign-in credentials.';
       } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection.';
+      } else if (error.message) {
+        errorMessage = error.message;
       }
 
       Alert.alert('Google Sign-In Failed', errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -298,6 +225,7 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
             title={isLoading ? 'Creating Account...' : 'Create Account'}
             onPress={handleRegister}
             disabled={isLoading}
+            loading={isLoading}
           />
 
           {/* Divider */}
@@ -308,7 +236,9 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
             variant="withIcon"
             onPress={handleGoogleSignIn}
             icon={<Icons.GoogleIcon height={20} width={20} />}
-            title="Continue with Google"
+            title={
+              isLoading ? 'Signing in with Google...' : 'Continue with Google'
+            }
             disabled={isLoading}
           />
 
