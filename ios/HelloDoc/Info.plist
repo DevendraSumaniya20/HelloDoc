@@ -20,7 +20,6 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -30,11 +29,10 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.249301927840-a5l991cd19kgc2kef8ti566oqfru7pti</string>
+				<string>com.googleusercontent.apps.249301927840-j5v6j1quor8j6kkml08vjsh8hvumsfk1</string>
 			</array>
 		</dict>
 	</array>
-
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
