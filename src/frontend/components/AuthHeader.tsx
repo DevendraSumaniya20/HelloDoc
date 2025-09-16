@@ -19,10 +19,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: Colors.grayMedium,
+    color: Colors.primary,
     marginBottom: 8,
   },
-  subtitle: { fontSize: 16, color: Colors.grayLight, textAlign: 'center' },
+  subtitle: { fontSize: 16, color: Colors.secondary, textAlign: 'center' },
 });
 
 export default AuthHeader;

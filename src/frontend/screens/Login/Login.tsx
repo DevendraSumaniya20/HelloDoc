@@ -1,5 +1,3 @@
-// Login.tsx
-
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -9,6 +7,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -19,8 +18,14 @@ import Icons from '../../constants/svgPath';
 import auth from '@react-native-firebase/auth';
 import type { RootStackParamList } from '../../types/types';
 import Colors from '../../constants/color';
+import { validateEmail } from '../../utils/validation';
 
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
 
 const Login: React.FC = () => {
   const navigation = useNavigation<RootNavigationProp>();
@@ -28,32 +33,79 @@ const Login: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  // Validate individual fields
+  const validateField = (field: string) => {
+    const newErrors: FormErrors = { ...errors };
+
+    switch (field) {
+      case 'email':
+        if (!email.trim()) {
+          newErrors.email = 'Email is required';
+        } else if (!validateEmail(email)) {
+          newErrors.email = 'Please enter a valid email address';
+        } else {
+          delete newErrors.email;
+        }
+        break;
+
+      case 'password':
+        if (!password.trim()) {
+          newErrors.password = 'Password is required';
+        } else if (password.length < 6) {
+          newErrors.password = 'Password must be at least 6 characters';
+        } else {
+          delete newErrors.password;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const handleFieldBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    validateField(field);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    setTouched({ email: true, password: true });
+
+    return Object.keys(newErrors).length === 0;
+  };
 
   // ===============================
   // Email/Password Login Handler
   // ===============================
   const handleLogin = async () => {
-    console.log('Attempting login with email:', email);
-
-    if (!email || !password) {
-      return Alert.alert('Error', 'Please fill in all fields');
-    }
-    if (!email.includes('@')) {
-      return Alert.alert('Error', 'Please enter a valid email');
-    }
+    if (!validateForm()) return;
 
     try {
-      const success = await login(email, password);
+      const success = await login(email.trim(), password);
 
       if (success) {
         Alert.alert('Success', 'Welcome back!', [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Home'),
-          },
+          { text: 'OK', onPress: () => navigation.navigate('Home') },
         ]);
       } else {
-        Alert.alert('Error', 'Invalid email or password');
+        setErrors({ password: 'Invalid email or password' });
       }
     } catch (error: any) {
       console.error('Login error:', error);
@@ -61,14 +113,14 @@ const Login: React.FC = () => {
 
       switch (error.code) {
         case 'auth/user-not-found':
-          errorMessage = 'No account found with this email address.';
-          break;
+          setErrors({ email: 'No account found with this email address.' });
+          return;
         case 'auth/wrong-password':
-          errorMessage = 'Incorrect password. Please try again.';
-          break;
+          setErrors({ password: 'Incorrect password. Please try again.' });
+          return;
         case 'auth/invalid-email':
-          errorMessage = 'Invalid email address.';
-          break;
+          setErrors({ email: 'Invalid email address.' });
+          return;
         case 'auth/user-disabled':
           errorMessage = 'This account has been disabled.';
           break;
@@ -80,7 +132,7 @@ const Login: React.FC = () => {
             'Network error. Please check your internet connection.';
           break;
         default:
-          errorMessage = error.message || errorMessage;
+          if (error.message) errorMessage = error.message;
       }
 
       Alert.alert('Login Failed', errorMessage);
@@ -88,25 +140,19 @@ const Login: React.FC = () => {
   };
 
   // ===============================
-  // Google Sign-In Handler (Simplified)
+  // Google Sign-In Handler
   // ===============================
   const handleGoogleSignIn = async () => {
-    console.log('Starting Google Sign-In');
-
     try {
       const success = await loginWithGoogle();
 
       if (success) {
         Alert.alert('Welcome!', 'Successfully signed in with Google!', [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('MainStack'),
-          },
+          { text: 'OK', onPress: () => navigation.navigate('MainStack') },
         ]);
       }
     } catch (error: any) {
       console.error('Google Sign-In error:', error);
-
       let errorMessage = 'Google sign-in failed. Please try again.';
 
       if (error.code === 'auth/account-exists-with-different-credential') {
@@ -162,9 +208,6 @@ const Login: React.FC = () => {
     );
   };
 
-  // ===============================
-  // Render
-  // ===============================
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -180,24 +223,30 @@ const Login: React.FC = () => {
             subtitle="Sign in to continue"
           />
 
+          {/* Email */}
           <Components.InputField
             label="Email"
             placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
+            onBlur={() => handleFieldBlur('email')}
             keyboardType="email-address"
             autoCapitalize="none"
             editable={!isLoading}
+            errorMessage={touched.email ? errors.email : undefined}
           />
 
+          {/* Password */}
           <Components.InputField
             label="Password"
             placeholder="Enter your password"
             value={password}
             onChangeText={setPassword}
+            onBlur={() => handleFieldBlur('password')}
             secureTextEntry
             autoCapitalize="none"
             editable={!isLoading}
+            errorMessage={touched.password ? errors.password : undefined}
           />
 
           <TouchableOpacity
