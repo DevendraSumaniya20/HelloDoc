@@ -19,6 +19,7 @@ import auth from '@react-native-firebase/auth';
 import type { RootStackParamList } from '../../types/types';
 import Colors from '../../constants/color';
 import { validateEmail } from '../../utils/validation';
+import { moderateScale, scale } from '../../constants/responsive';
 
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -262,6 +263,7 @@ const Login: React.FC = () => {
             onPress={handleLogin}
             disabled={isLoading}
             loading={isLoading}
+            variant="primary"
           />
 
           <Components.Divider />
@@ -291,9 +293,13 @@ const Login: React.FC = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.white },
   keyboardContainer: { flex: 1 },
-  scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
-  forgotPassword: { alignSelf: 'flex-end', marginBottom: 30 },
-  forgotPasswordText: { fontSize: 14, color: '#007AFF', fontWeight: '500' },
+  scrollContainer: { flexGrow: 1, paddingHorizontal: moderateScale(20) },
+  forgotPassword: { alignSelf: 'flex-end', marginBottom: moderateScale(30) },
+  forgotPasswordText: {
+    fontSize: scale(14),
+    color: Colors.info,
+    fontWeight: '500',
+  },
 });
 
 export default Login;
