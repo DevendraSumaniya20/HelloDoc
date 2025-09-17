@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,18 +8,25 @@ import {
   Image,
   StatusBar,
   Alert,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import HomeStyle from './HomeStyle';
 import { Doctor, HealthCategory } from '../../types/types';
 import { useAuth } from '../../hooks/AuthContext';
 import Colors from '../../constants/color';
+import Components from '../../components';
 
 const Home: React.FC = () => {
-  // Get authenticated user data from AuthContext
-  const { user, logout: authLogout } = useAuth();
+  const {
+    user,
+    logout: authLogout,
+    checkUserExists,
+    isAuthenticated,
+  } = useAuth();
+  const [isCheckingUser, setIsCheckingUser] = useState(false);
 
-  // Sample data
   const topDoctors: Doctor[] = [
     {
       id: '1',
@@ -49,78 +56,62 @@ const Home: React.FC = () => {
     { id: '4', name: 'General Surgery', icon: '🏥', color: '#F8F0FF' },
   ];
 
-  // 🔑 Logout function using AuthContext
+  useFocusEffect(
+    useCallback(() => {
+      const verifyUser = async () => {
+        if (!user || !isAuthenticated) return;
+        setIsCheckingUser(true);
+        try {
+          await checkUserExists();
+        } finally {
+          setIsCheckingUser(false);
+        }
+      };
+      verifyUser();
+    }, [user, isAuthenticated, checkUserExists]),
+  );
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active' && user && isAuthenticated) {
+        checkUserExists().catch(console.error);
+      }
+    };
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
+    return () => subscription?.remove();
+  }, [user, isAuthenticated, checkUserExists]);
+
   const handleLogout = async () => {
+    setIsCheckingUser(true);
     try {
       await authLogout();
       Alert.alert('Logged Out', 'You have been signed out successfully.');
-      // 👉 If you have navigation, redirect user to Login screen:
-      // navigation.replace("Login");
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch {
       Alert.alert('Error', 'Failed to log out. Please try again.');
+    } finally {
+      setIsCheckingUser(false);
     }
   };
 
-  // Helper function to get user's first name or display name
   const getUserDisplayName = () => {
-    if (user?.firstName) {
-      return user.firstName;
-    } else if (user?.displayName) {
-      // Extract first name from display name
-      return user.displayName.split(' ')[0];
-    } else if (user?.email) {
-      // Fallback to email username
-      return user.email.split('@')[0];
-    }
+    if (user?.firstName) return user.firstName;
+    if (user?.displayName) return user.displayName.split(' ')[0];
+    if (user?.email) return user.email.split('@')[0];
     return 'User';
   };
 
-  // Helper function to get profile image
-  const getProfileImage = () => {
-    if (user?.photoURL) {
-      return user.photoURL;
-    }
-    // Fallback to placeholder
-    return 'https://via.placeholder.com/40x40';
-  };
+  const getProfileImage = () =>
+    user?.photoURL || 'https://via.placeholder.com/40x40';
 
-  const renderDoctorCard = (doctor: Doctor) => (
-    <TouchableOpacity key={doctor.id} style={HomeStyle.doctorCard}>
-      <View style={HomeStyle.doctorImageContainer}>
-        <Image source={{ uri: doctor.image }} style={HomeStyle.doctorImage} />
-        {doctor.isOnline && <View style={HomeStyle.onlineIndicator} />}
-      </View>
-      <View style={HomeStyle.doctorInfo}>
-        <Text style={HomeStyle.doctorName}>{doctor.name}</Text>
-        <Text style={HomeStyle.doctorSpecialty}>{doctor.specialty}</Text>
-        <View style={HomeStyle.ratingContainer}>
-          <Text style={HomeStyle.ratingText}>⭐ {doctor.rating}</Text>
-          <Text style={HomeStyle.reviewText}>({doctor.reviews} reviews)</Text>
-        </View>
-      </View>
-      <TouchableOpacity style={HomeStyle.consultButton}>
-        <Text style={HomeStyle.consultButtonText}>Consult</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-
-  const renderHealthCategory = (category: HealthCategory) => (
-    <TouchableOpacity key={category.id} style={HomeStyle.categoryCard}>
-      <View
-        style={[HomeStyle.categoryIcon, { backgroundColor: category.color }]}
-      >
-        <Text style={HomeStyle.categoryIconText}>{category.icon}</Text>
-      </View>
-      <Text style={HomeStyle.categoryName}>{category.name}</Text>
-    </TouchableOpacity>
-  );
+  if (!user || !isAuthenticated) return null;
 
   return (
     <SafeAreaView style={HomeStyle.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.grayDark} />
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={HomeStyle.header}>
           <View style={HomeStyle.headerTop}>
             <View>
@@ -129,8 +120,6 @@ const Home: React.FC = () => {
               </Text>
               <Text style={HomeStyle.subGreeting}>How Can I Help You?</Text>
             </View>
-
-            {/* Profile + Logout Button */}
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TouchableOpacity style={HomeStyle.profileButton}>
                 <Image
@@ -140,22 +129,22 @@ const Home: React.FC = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleLogout}
+                disabled={isCheckingUser}
                 style={{
-                  marginLeft: 10,
+                  marginLeft: 8,
                   backgroundColor: '#e63946',
                   paddingHorizontal: 12,
                   paddingVertical: 6,
                   borderRadius: 8,
+                  opacity: isCheckingUser ? 0.6 : 1,
                 }}
               >
                 <Text style={{ color: Colors.white, fontWeight: 'bold' }}>
-                  Logout
+                  {isCheckingUser ? 'Wait...' : 'Logout'}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-
-          {/* Search Bar */}
           <View style={HomeStyle.searchContainer}>
             <Text style={HomeStyle.searchIcon}>🔍</Text>
             <TextInput
@@ -166,9 +155,7 @@ const Home: React.FC = () => {
           </View>
         </View>
 
-        {/* Main Content */}
         <View style={HomeStyle.content}>
-          {/* AI Doctor Banner */}
           <TouchableOpacity style={HomeStyle.aiDoctorBanner}>
             <View style={HomeStyle.bannerContent}>
               <Text style={HomeStyle.bannerTitle}>Ask AI Doctor</Text>
@@ -181,7 +168,6 @@ const Home: React.FC = () => {
             </View>
           </TouchableOpacity>
 
-          {/* Top Doctor Section */}
           <View style={HomeStyle.section}>
             <View style={HomeStyle.sectionHeader}>
               <Text style={HomeStyle.sectionTitle}>Top Doctor's Nearby</Text>
@@ -189,10 +175,11 @@ const Home: React.FC = () => {
                 <Text style={HomeStyle.viewAllText}>View All</Text>
               </TouchableOpacity>
             </View>
-            {topDoctors.map(renderDoctorCard)}
+            {topDoctors.map(doc => (
+              <Components.DoctorCard key={doc.id} doctor={doc} />
+            ))}
           </View>
 
-          {/* Health Categories */}
           <View style={HomeStyle.section}>
             <View style={HomeStyle.sectionHeader}>
               <Text style={HomeStyle.sectionTitle}>Top Health Categories</Text>
@@ -201,7 +188,9 @@ const Home: React.FC = () => {
               </TouchableOpacity>
             </View>
             <View style={HomeStyle.categoriesGrid}>
-              {healthCategories.map(renderHealthCategory)}
+              {healthCategories.map(cat => (
+                <Components.CategoryCard key={cat.id} category={cat} />
+              ))}
             </View>
           </View>
         </View>

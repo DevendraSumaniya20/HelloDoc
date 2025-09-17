@@ -4,35 +4,39 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useRef,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 import {
-  GoogleSignin,
-  statusCodes,
-  isErrorWithCode,
-  isSuccessResponse,
-} from '@react-native-google-signin/google-signin';
+  loginWithEmail,
+  loginWithGoogle as googleLogin,
+  registerWithEmail,
+  sendVerificationEmail,
+  resetPassword as resetPasswordService,
+  logoutFirebase,
+} from '../services/authService';
+
+import {
+  getUserDoc,
+  setUserDoc,
+  updateUserDoc,
+  listenToUserDoc,
+} from '../services/firestoreService';
+
+import {
+  saveUserToStorage,
+  getUserFromStorage,
+  clearUserFromStorage,
+  checkFirstLaunch,
+  setFirstLaunch,
+} from '../services/storageService';
+import { RegisterData, User } from '../types/types';
 
 // Types
-interface User {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  firstName?: string;
-  lastName?: string;
-  photoURL?: string | null;
-  provider?: string;
-  emailVerified?: boolean;
-}
-
-interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
 
 interface AuthContextType {
   user: User | null;
@@ -50,6 +54,7 @@ interface AuthContextType {
   sendEmailVerification: () => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
   updateUserProfile: (data: Partial<User>) => Promise<boolean>;
+  checkUserExists: () => Promise<boolean>;
 }
 
 interface AuthProviderProps {
@@ -72,22 +77,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [initializing, setInitializing] = useState<boolean>(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>(true);
 
+  // Use refs to avoid stale closures
+  const firestoreListenerRef = useRef<(() => void) | null>(null);
+  const authListenerRef = useRef<(() => void) | null>(null);
+  const userCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const currentUserRef = useRef<User | null>(null);
+
+  type FirebaseErrorLike = Error & { code?: string };
+
+  // Keep current user in sync with ref
+  useEffect(() => {
+    currentUserRef.current = user;
+  }, [user]);
+
   const isAuthenticated = !!user;
 
-  console.log('AuthProvider mounted ✅');
+  console.log('🔧 AuthProvider mounted ✅');
 
   const getUserData = async (
     firebaseUser: FirebaseAuthTypes.User,
   ): Promise<User> => {
-    console.log('Fetching Firestore data for user:', firebaseUser.uid);
+    console.log('📥 Fetching Firestore data for user:', firebaseUser.uid);
     try {
       const userDoc = await firestore()
         .collection('users')
         .doc(firebaseUser.uid)
         .get();
 
+      if (!userDoc.exists) {
+        console.log('🚨 User document does not exist - account deleted');
+        throw new Error('USER_DOCUMENT_NOT_FOUND');
+      }
+
       const userData = userDoc.data();
-      console.log('Fetched user data:', userData);
+      console.log('✅ Fetched user data successfully');
 
       return {
         uid: firebaseUser.uid,
@@ -100,391 +123,415 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         provider: userData?.provider || 'email',
         ...userData,
       };
-    } catch (error) {
-      console.error('Error getting user data ❌:', error);
-      return {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-        emailVerified: firebaseUser.emailVerified,
-      };
+    } catch (error: any) {
+      console.error('❌ Error getting user data:', error);
+      throw error;
     }
   };
 
-  const createUserProfile = async (user: any, additionalData: any = {}) => {
-    console.log('Creating user profile in Firestore for:', user.uid);
+  // Force logout function - guaranteed to work
+  const forceLogout = async (reason = 'Account deletion detected') => {
+    console.log(`🚨 FORCE LOGOUT: ${reason}`);
+
     try {
-      const userRef = firestore().collection('users').doc(user.uid);
-      const userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        console.log('User profile does not exist, creating new one.');
-        const { firstName, lastName, email, photoURL, provider } =
-          additionalData;
-        const createdAt = firestore.Timestamp.now();
-
-        await userRef.set({
-          firstName: firstName || '',
-          lastName: lastName || '',
-          email,
-          displayName: user.displayName || `${firstName} ${lastName}`,
-          photoURL: photoURL || null,
-          provider: provider || 'email',
-          createdAt,
-          updatedAt: createdAt,
-          ...additionalData,
-        });
-      } else {
-        console.log('User profile already exists ✅');
+      // 1️⃣ Clear periodic user check
+      if (userCheckIntervalRef.current) {
+        clearInterval(userCheckIntervalRef.current);
+        userCheckIntervalRef.current = null;
       }
-      return userRef;
+
+      // 2️⃣ Clear Firestore listener
+      if (firestoreListenerRef.current) {
+        try {
+          firestoreListenerRef.current(); // unsubscribe
+        } catch (error) {
+          console.log('Error cleaning up Firestore listener:', error);
+        }
+        firestoreListenerRef.current = null;
+      }
+
+      // 3️⃣ Store provider before clearing user
+      const currentProvider = currentUserRef.current?.provider;
+
+      // 4️⃣ Clear user state immediately to trigger navigation
+      setUser(null);
+      currentUserRef.current = null;
+
+      // 5️⃣ Clear AsyncStorage
+      try {
+        await clearUserFromStorage();
+        console.log('✅ Storage cleared');
+      } catch (error) {
+        console.log('Error clearing storage:', error);
+      }
+
+      // 6️⃣ Google signout if needed
+      if (currentProvider === 'google') {
+        try {
+          const googleUser = await GoogleSignin.getCurrentUser();
+          if (googleUser) {
+            await GoogleSignin.signOut();
+            console.log('✅ Google signout completed');
+          }
+        } catch (error) {
+          console.log('Google signout error (non-critical):', error);
+        }
+      }
+
+      // 7️⃣ Firebase signout
+      try {
+        const firebaseUser = auth().currentUser;
+        if (firebaseUser) {
+          await auth().signOut();
+          console.log('✅ Firebase signout completed');
+        }
+      } catch (error) {
+        console.log('Firebase signout error:', error);
+      }
+
+      console.log('✅ FORCE LOGOUT COMPLETED');
     } catch (error) {
-      console.error('Error creating user profile ❌:', error);
-      throw error;
+      console.error('❌ Error during force logout:', error);
+      // Even if everything else fails, ensure user state is cleared
+      setUser(null);
+      currentUserRef.current = null;
     }
+  };
+
+  // Function to check if user document still exists
+  const checkUserExists = async (): Promise<boolean> => {
+    const currentUser = currentUserRef.current;
+    if (!currentUser) return false;
+
+    try {
+      const userDoc = await firestore()
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
+      if (!userDoc.exists()) {
+        console.log('🚨 User document deleted, logging out');
+        await forceLogout('User deleted by admin');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      return true; // don't logout on network errors
+    }
+  };
+
+  // Setup periodic user check (backup method)
+  const setupUserCheck = () => {
+    if (userCheckIntervalRef.current)
+      clearInterval(userCheckIntervalRef.current);
+
+    userCheckIntervalRef.current = setInterval(async () => {
+      if (currentUserRef.current) {
+        await checkUserExists();
+      }
+    }, 30000); // every 30 seconds
+  };
+
+  // Enhanced Firestore listener
+
+  const setupFirestoreListener = (uid: string) => {
+    // Clean up previous listener
+    firestoreListenerRef.current?.();
+    firestoreListenerRef.current = null;
+
+    const unsubscribe = listenToUserDoc(
+      uid,
+      async updatedData => {
+        if (!updatedData) {
+          console.log('🚨 User document deleted by admin!');
+          await forceLogout('User document deleted by admin');
+        } else {
+          const currentUser = currentUserRef.current;
+          if (currentUser) {
+            const updatedUser = { ...currentUser, ...updatedData };
+            setUser(updatedUser);
+            await saveUserToStorage(updatedUser);
+          }
+        }
+      },
+      async error => {
+        const err = error as FirebaseErrorLike;
+        console.error('Firestore listener error:', err);
+        await forceLogout(`Firestore error: ${err.code ?? 'unknown'}`);
+      },
+    );
+
+    firestoreListenerRef.current = unsubscribe;
   };
 
   const onAuthStateChanged = async (
     firebaseUser: FirebaseAuthTypes.User | null,
   ) => {
-    console.log('Auth state changed:', firebaseUser?.uid || 'No user');
+    console.log('🔄 Auth state changed:', firebaseUser?.uid || 'No user');
+
     try {
       if (firebaseUser) {
-        const userData = await getUserData(firebaseUser);
-        setUser(userData);
-        console.log('User set in state:', userData);
-        await AsyncStorage.setItem('user', JSON.stringify(userData));
+        // User is signed in
+        try {
+          // Fetch user data from Firestore
+          const userData = await getUserData(firebaseUser);
+          setUser(userData);
+          currentUserRef.current = userData;
+
+          console.log('👤 User set in state');
+          await saveUserToStorage(userData);
+
+          // 1️⃣ Setup Firestore real-time listener
+          setupFirestoreListener(firebaseUser.uid);
+
+          // 2️⃣ Setup periodic backup check
+          setupUserCheck();
+        } catch (error: any) {
+          console.error('❌ Error fetching user data:', error);
+
+          // If user doc is missing, force logout immediately
+          if (error.message === 'USER_DOCUMENT_NOT_FOUND') {
+            console.log('🚨 User authenticated but document missing');
+            await forceLogout('User document not found during auth');
+            return;
+          }
+
+          // Other unexpected errors
+          await forceLogout('Error getting user data during auth');
+          return;
+        }
       } else {
+        // User is signed out
+        console.log('📤 User signed out');
+
+        // Clear intervals and listeners
+        if (userCheckIntervalRef.current) {
+          clearInterval(userCheckIntervalRef.current);
+          userCheckIntervalRef.current = null;
+        }
+
+        if (firestoreListenerRef.current) {
+          firestoreListenerRef.current();
+          firestoreListenerRef.current = null;
+        }
+
         setUser(null);
-        await AsyncStorage.removeItem('user');
-        console.log('User signed out, local data cleared.');
+        currentUserRef.current = null;
+        await clearUserFromStorage();
       }
     } catch (error) {
-      console.error('Error in auth state change ❌:', error);
+      console.error('❌ Unexpected error in auth state change:', error);
+      setUser(null);
+      currentUserRef.current = null;
     }
 
+    // Initialization complete
     if (initializing) setInitializing(false);
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('Initializing auth...');
+      console.log('🚀 Initializing auth...');
       try {
         const hasLaunchedBefore = await AsyncStorage.getItem(
           'hasLaunchedBefore',
         );
         setIsFirstLaunch(!hasLaunchedBefore);
-        console.log('Is first launch?', !hasLaunchedBefore);
 
         const cachedUser = await AsyncStorage.getItem('user');
         if (cachedUser) {
-          console.log('Found cached user:', cachedUser);
-          setUser(JSON.parse(cachedUser));
+          console.log('💾 Found cached user');
+          try {
+            const parsedUser = JSON.parse(cachedUser);
+
+            // Verify cached user still exists
+            const userDoc = await firestore()
+              .collection('users')
+              .doc(parsedUser.uid)
+              .get();
+
+            if (userDoc.exists()) {
+              setUser(parsedUser);
+              currentUserRef.current = parsedUser;
+              setupFirestoreListener(parsedUser.uid);
+              setupUserCheck();
+              console.log('✅ Cached user verified and restored');
+            } else {
+              console.log('🚨 Cached user no longer exists - clearing');
+              await AsyncStorage.removeItem('user');
+            }
+          } catch (error) {
+            console.error('❌ Error verifying cached user:', error);
+            await AsyncStorage.removeItem('user');
+          }
         }
       } catch (error) {
-        console.error('Error initializing auth ❌:', error);
+        console.error('❌ Error initializing auth:', error);
       }
     };
 
     initializeAuth();
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber;
+
+    const authSubscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    authListenerRef.current = authSubscriber;
+
+    return () => {
+      console.log('🧹 Cleaning up auth provider');
+
+      if (authListenerRef.current) {
+        authListenerRef.current();
+        authListenerRef.current = null;
+      }
+
+      if (firestoreListenerRef.current) {
+        firestoreListenerRef.current();
+        firestoreListenerRef.current = null;
+      }
+
+      if (userCheckIntervalRef.current) {
+        clearInterval(userCheckIntervalRef.current);
+        userCheckIntervalRef.current = null;
+      }
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    console.log('Login attempt with email:', email);
     try {
       setIsLoading(true);
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
-      console.log('Login success ✅', userCredential.user?.uid);
-      if (userCredential.user) {
-        const userData = await getUserData(userCredential.user);
-        setUser(userData);
-        return true;
-      }
+      const userCredential = await loginWithEmail(email, password);
+      const firebaseUser = userCredential.user;
+
+      const userDoc = await getUserDoc(firebaseUser.uid);
+      if (!userDoc.exists) throw new Error('USER_DOCUMENT_NOT_FOUND');
+
+      const userData = userDoc.data();
+      const completeUser = { uid: firebaseUser.uid, ...userData };
+
+      setUser(completeUser);
+      await saveUserToStorage(completeUser);
+
+      return true;
+    } catch (error) {
+      console.error('❌ Login error:', error);
       return false;
-    } catch (error: any) {
-      console.error('Login error ❌:', error);
-      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const loginWithGoogle = async (): Promise<boolean> => {
-    console.log('🔄 Google Sign-In attempt started...');
     try {
       setIsLoading(true);
-      console.log('⏳ Checking Google Play Services...');
+      const userCredential = await googleLogin();
+      if (!userCredential) return false;
 
-      // Check for Google Play Services
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-      console.log('✅ Google Play Services available');
+      const firebaseUser = userCredential.user;
 
-      // Perform Google Sign-In
-      console.log('⏳ Opening Google Sign-In dialog...');
-      const googleSignInResult = await GoogleSignin.signIn();
-      console.log('📥 Google Sign-In result:', googleSignInResult);
-
-      // Check if sign-in was successful
-      if (!isSuccessResponse(googleSignInResult)) {
-        console.error('❌ Google Sign-In was cancelled or failed');
-        return false;
-      }
-
-      const { user: googleUser, idToken } =
-        googleSignInResult.data || googleSignInResult;
-
-      if (!idToken) {
-        console.error('❌ No ID token found in Google sign-in response');
-        return false;
-      }
-
-      console.log('✅ Google Sign-In success');
-      console.log('👤 User Info:', {
-        id: googleUser.id,
-        email: googleUser.email,
-        name: googleUser.name,
-        photo: googleUser.photo,
-      });
-      console.log('🔑 ID Token:', idToken);
-
-      // Create Firebase credential and sign in
-      console.log('⏳ Creating Firebase credential...');
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      console.log('✅ Firebase credential created');
-
-      console.log('⏳ Signing in to Firebase with Google credential...');
-      const userCredential = await auth().signInWithCredential(
-        googleCredential,
-      );
-      console.log('✅ Signed in to Firebase:', userCredential.user?.email);
-
-      // Parse user's display name
-      const displayName = googleUser.name || '';
-      const nameParts = displayName.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      console.log('📛 Parsed Name:', { firstName, lastName });
-
-      // Create/update user profile in Firestore
-      console.log('⏳ Saving user profile to Firestore...');
-      await firestore().collection('users').doc(googleUser.id).set(
-        {
-          firstName,
-          lastName,
-          email: googleUser.email,
-          displayName: googleUser.name,
-          photoURL: googleUser.photo,
-          provider: 'google',
-          createdAt: firestore.Timestamp.now(),
-          updatedAt: firestore.Timestamp.now(),
-        },
-        { merge: true },
-      );
-      console.log('✅ User profile saved in Firestore');
-
-      // Create user data object
-      const completeUserData: User = {
-        uid: googleUser.id,
-        email: googleUser.email,
-        displayName: googleUser.name,
-        firstName,
-        lastName,
-        photoURL: googleUser.photo,
+      await setUserDoc(firebaseUser.uid, {
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
         provider: 'google',
-        emailVerified: true,
-      };
+        updatedAt: new Date(),
+      });
 
-      console.log('📦 Final User Object:', completeUserData);
+      const userDoc = await getUserDoc(firebaseUser.uid);
+      const userData = userDoc.data();
+      const completeUser = { uid: firebaseUser.uid, ...userData };
 
-      // Set user in state
-      console.log('⏳ Updating state with user...');
-      setUser(completeUserData);
-      console.log('✅ User set in state');
+      setUser(completeUser);
+      await saveUserToStorage(completeUser);
 
-      console.log('🎉 Google Sign-In flow completed successfully');
       return true;
-    } catch (error: any) {
-      console.error('🔥 Google Sign-In error:', error);
-
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.SIGN_IN_CANCELLED:
-            console.log('⚠️ User cancelled the sign-in flow');
-            return false;
-          case statusCodes.IN_PROGRESS:
-            console.log('⚠️ Sign-in already in progress');
-            return false;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            console.error('❌ Google Play Services not available or outdated');
-            throw new Error('Google Play Services not available or outdated');
-          default:
-            console.error(
-              '❌ Unhandled Google Sign-In error code:',
-              error.code,
-            );
-            throw error;
-        }
-      }
-
-      throw error;
+    } catch (error) {
+      console.error('❌ Google login error:', error);
+      return false;
     } finally {
       setIsLoading(false);
-      console.log('🔚 Google Sign-In attempt finished (loading stopped)');
     }
   };
 
   const register = async (userData: RegisterData): Promise<boolean> => {
-    console.log('Registering new user:', userData.email);
     try {
       setIsLoading(true);
-      const userCredential = await auth().createUserWithEmailAndPassword(
+      const userCredential = await registerWithEmail(
         userData.email,
         userData.password,
       );
-
       const firebaseUser = userCredential.user;
-      console.log('Firebase user created ✅:', firebaseUser.uid);
 
-      await firebaseUser.updateProfile({
+      await setUserDoc(firebaseUser.uid, {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
         displayName: `${userData.firstName} ${userData.lastName}`,
+        provider: 'email',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
-      await firestore()
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .set({
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          email: userData.email,
-          displayName: `${userData.firstName} ${userData.lastName}`,
-          provider: 'email',
-          createdAt: firestore.Timestamp.now(),
-          updatedAt: firestore.Timestamp.now(),
-        });
+      const userDoc = await getUserDoc(firebaseUser.uid);
+      const completeUser = { uid: firebaseUser.uid, ...userDoc.data() };
 
-      const completeUserData = await getUserData(firebaseUser);
-      setUser(completeUserData);
+      setUser(completeUser);
+      await saveUserToStorage(completeUser);
+
       return true;
-    } catch (error: any) {
-      console.error('Registration error ❌:', error);
-      throw error;
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async (): Promise<void> => {
-    console.log('Logging out user...');
     try {
-      setIsLoading(true);
-      if (user?.provider === 'google') {
-        try {
-          await GoogleSignin.signOut();
-          console.log('Google sign-out successful ✅');
-        } catch (error) {
-          console.log('Google sign out error (non-critical):', error);
-        }
-      }
-      await auth().signOut();
-      await AsyncStorage.removeItem('user');
+      await logoutFirebase();
+      await clearUserFromStorage();
       setUser(null);
-      console.log('User logged out successfully ✅');
     } catch (error) {
-      console.error('Logout error ❌:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
+      console.error('❌ Logout error:', error);
     }
   };
 
   const sendEmailVerification = async (): Promise<boolean> => {
-    console.log('Sending email verification...');
-    try {
-      const currentUser = auth().currentUser;
-      if (currentUser && !currentUser.emailVerified) {
-        await currentUser.sendEmailVerification();
-        console.log('Email verification sent ✅');
-        return true;
-      }
-      console.log('No email verification needed.');
-      return false;
-    } catch (error) {
-      console.error('Email verification error ❌:', error);
-      return false;
-    }
+    return sendVerificationEmail();
   };
 
   const resetPassword = async (email: string): Promise<boolean> => {
-    console.log('Sending password reset email to:', email);
     try {
-      await auth().sendPasswordResetEmail(email);
-      console.log('Password reset email sent ✅');
+      await resetPasswordService(email);
       return true;
     } catch (error) {
-      console.error('Password reset error ❌:', error);
-      throw error;
+      console.error('❌ Reset password error:', error);
+      return false;
     }
   };
 
   const updateUserProfile = async (data: Partial<User>): Promise<boolean> => {
-    console.log('Updating user profile with data:', data);
     try {
       if (!user) return false;
-      setIsLoading(true);
 
-      await firestore()
-        .collection('users')
-        .doc(user.uid)
-        .update({
-          ...data,
-          updatedAt: firestore.Timestamp.now(),
-        });
-
-      if (data.displayName || data.firstName || data.lastName) {
-        const currentUser = auth().currentUser;
-        if (currentUser) {
-          await currentUser.updateProfile({
-            displayName:
-              data.displayName ||
-              `${data.firstName || user.firstName} ${
-                data.lastName || user.lastName
-              }`,
-          });
-          console.log('Firebase profile updated ✅');
-        }
-      }
+      await updateUserDoc(user.uid, {
+        ...data,
+        updatedAt: new Date(),
+      });
 
       const updatedUser = { ...user, ...data };
       setUser(updatedUser);
-      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-      console.log('User profile updated locally ✅');
+      await saveUserToStorage(updatedUser);
 
       return true;
     } catch (error) {
-      console.error('Update profile error ❌:', error);
+      console.error('❌ Update profile error:', error);
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const markFirstLaunchComplete = async (): Promise<void> => {
-    console.log('Marking first launch complete.');
-    try {
-      setIsFirstLaunch(false);
-      await AsyncStorage.setItem('hasLaunchedBefore', 'true');
-    } catch (error) {
-      console.error('Error marking first launch complete ❌:', error);
-    }
+    await setFirstLaunch();
+    setIsFirstLaunch(false);
   };
 
   const value: AuthContextType = {
@@ -502,6 +549,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     sendEmailVerification,
     resetPassword,
     updateUserProfile,
+    checkUserExists,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

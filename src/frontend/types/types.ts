@@ -72,6 +72,24 @@ export type RegisterScreenProps = NativeStackScreenProps<
   'Register'
 >;
 
+export interface User {
+  uid: string;
+  email?: string | null;
+  displayName?: string | null;
+  firstName?: string;
+  lastName?: string;
+  photoURL?: string | null;
+  provider?: string;
+  emailVerified?: boolean;
+}
+
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
 /**
  * --- DOMAIN MODELS ---
  */

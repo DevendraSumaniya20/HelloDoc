@@ -15,34 +15,28 @@ import {
 import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
 
-// Create separate navigators
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStackNav = createNativeStackNavigator<AuthStackParamList>();
 const MainStackNav = createNativeStackNavigator<MainStackParamList>();
 
-// Screen options
 const defaultScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
 };
-
 const authScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
   gestureEnabled: false,
   animation: 'slide_from_right',
 };
-
 const mainScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
   animation: 'slide_from_right',
 };
-
 const modalScreenOptions: NativeStackNavigationOptions = {
   presentation: 'modal',
   animation: 'slide_from_bottom',
   headerShown: false,
 };
 
-// --- AUTH STACK (Login/Register) ---
 const AuthStack = () => (
   <AuthStackNav.Navigator
     initialRouteName={navigationStrings.Login}
@@ -59,7 +53,6 @@ const AuthStack = () => (
   </AuthStackNav.Navigator>
 );
 
-// --- MAIN STACK (Home/Settings) ---
 const MainStack = () => (
   <MainStackNav.Navigator
     initialRouteName={navigationStrings.Home}
@@ -76,64 +69,51 @@ const MainStack = () => (
   </MainStackNav.Navigator>
 );
 
-// --- ROOT NAVIGATOR ---
 const Navigation: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, initializing } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    // If auth finished loading → wait 1.5s then hide splash
-    if (!isLoading) {
-      const timer = setTimeout(() => setShowSplash(false), 1500);
-      return () => clearTimeout(timer);
+    let timeoutId: NodeJS.Timeout;
+
+    if (!initializing) {
+      timeoutId = setTimeout(() => setShowSplash(false), 1500);
     }
-  }, [isLoading]);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [initializing]);
+
+  if (initializing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.info} />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
       <Suspense
         fallback={
-          <View style={styles.suspenseContainer}>
+          <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.info} />
           </View>
         }
       >
         <RootStack.Navigator screenOptions={defaultScreenOptions}>
           {showSplash ? (
-            // ✅ Splash always shown on every launch until auth is ready
             <RootStack.Screen
               name={navigationStrings.Splash}
               component={screens.Splash}
             />
           ) : !isAuthenticated ? (
-            // Not authenticated → Auth flow
-            <RootStack.Screen
-              name="AuthStack"
-              component={AuthStack}
-              options={{ headerShown: false }}
-            />
+            <RootStack.Screen name="AuthStack" component={AuthStack} />
           ) : (
-            // Authenticated → Main app
-            <>
-              <RootStack.Screen
-                name="MainStack"
-                options={{ headerShown: false }}
-              >
-                {() => <MainStack />}
-              </RootStack.Screen>
-
-              {/* Optional: login/register as modals */}
-              <RootStack.Screen
-                name={navigationStrings.Login}
-                component={screens.Login}
-                options={modalScreenOptions}
-              />
-              <RootStack.Screen
-                name={navigationStrings.Register}
-                component={screens.Register}
-                options={modalScreenOptions}
-              />
-            </>
+            <RootStack.Screen name="MainStack">
+              {() => <MainStack />}
+            </RootStack.Screen>
           )}
         </RootStack.Navigator>
       </Suspense>
@@ -147,12 +127,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.white,
-  },
-  suspenseContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.accent,
   },
 });
 
