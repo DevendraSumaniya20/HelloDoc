@@ -18,7 +18,7 @@ interface DoctorCardProps {
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onConsult }) => (
-  <TouchableOpacity style={styles.doctorCard}>
+  <TouchableOpacity style={styles.doctorCard} onPress={onConsult}>
     <View style={styles.doctorImageContainer}>
       <Image source={{ uri: doctor.image }} style={styles.doctorImage} />
       {doctor.isOnline && <View style={styles.onlineIndicator} />}

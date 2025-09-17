@@ -7,25 +7,29 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
-  Alert,
   AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import HomeStyle from './HomeStyle';
-import { Doctor, HealthCategory } from '../../types/types';
+import { Doctor, HealthCategory, MainStackParamList } from '../../types/types';
 import { useAuth } from '../../hooks/AuthContext';
 import Colors from '../../constants/color';
 import Components from '../../components';
+import Icons from '../../constants/svgPath';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import navigationStrings from '../../constants/navigationString';
 
 const Home: React.FC = () => {
-  const {
-    user,
-    logout: authLogout,
-    checkUserExists,
-    isAuthenticated,
-  } = useAuth();
+  const { user, checkUserExists, isAuthenticated } = useAuth();
   const [isCheckingUser, setIsCheckingUser] = useState(false);
+
+  type HomeScreenNavigationProp = NativeStackNavigationProp<
+    MainStackParamList,
+    'Home'
+  >;
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const topDoctors: Doctor[] = [
     {
@@ -84,18 +88,6 @@ const Home: React.FC = () => {
     return () => subscription?.remove();
   }, [user, isAuthenticated, checkUserExists]);
 
-  const handleLogout = async () => {
-    setIsCheckingUser(true);
-    try {
-      await authLogout();
-      Alert.alert('Logged Out', 'You have been signed out successfully.');
-    } catch {
-      Alert.alert('Error', 'Failed to log out. Please try again.');
-    } finally {
-      setIsCheckingUser(false);
-    }
-  };
-
   const getUserDisplayName = () => {
     if (user?.firstName) return user.firstName;
     if (user?.displayName) return user.displayName.split(' ')[0];
@@ -120,37 +112,22 @@ const Home: React.FC = () => {
               </Text>
               <Text style={HomeStyle.subGreeting}>How Can I Help You?</Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity style={HomeStyle.profileButton}>
-                <Image
-                  source={{ uri: getProfileImage() }}
-                  style={HomeStyle.profileImage}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLogout}
-                disabled={isCheckingUser}
-                style={{
-                  marginLeft: 8,
-                  backgroundColor: '#e63946',
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  borderRadius: 8,
-                  opacity: isCheckingUser ? 0.6 : 1,
-                }}
-              >
-                <Text style={{ color: Colors.white, fontWeight: 'bold' }}>
-                  {isCheckingUser ? 'Wait...' : 'Logout'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={HomeStyle.profileButton}
+              onPress={() => navigation.navigate(navigationStrings.Profile)}
+            >
+              <Image
+                source={{ uri: getProfileImage() }}
+                style={HomeStyle.profileImage}
+              />
+            </TouchableOpacity>
           </View>
           <View style={HomeStyle.searchContainer}>
-            <Text style={HomeStyle.searchIcon}>🔍</Text>
+            <Icons.Search height={20} width={20} fill={Colors.white} />
             <TextInput
               style={HomeStyle.searchInput}
               placeholder="Search doctors, medicines etc"
-              placeholderTextColor="#888"
+              placeholderTextColor={Colors.neutral}
             />
           </View>
         </View>
@@ -176,7 +153,13 @@ const Home: React.FC = () => {
               </TouchableOpacity>
             </View>
             {topDoctors.map(doc => (
-              <Components.DoctorCard key={doc.id} doctor={doc} />
+              <Components.DoctorCard
+                key={doc.id}
+                doctor={doc}
+                onConsult={() =>
+                  navigation.navigate(navigationStrings.Chat, { doctor: doc })
+                }
+              />
             ))}
           </View>
 

@@ -14,6 +14,7 @@ import {
 } from '../types/types';
 import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
+import TabNavigation from './TabNavigation';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStackNav = createNativeStackNavigator<AuthStackParamList>();
@@ -25,19 +26,10 @@ const defaultScreenOptions: NativeStackNavigationOptions = {
 const authScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
   gestureEnabled: false,
-  animation: 'slide_from_right',
 };
-const mainScreenOptions: NativeStackNavigationOptions = {
-  headerShown: false,
-  animation: 'slide_from_right',
-};
-const modalScreenOptions: NativeStackNavigationOptions = {
-  presentation: 'modal',
-  animation: 'slide_from_bottom',
-  headerShown: false,
-};
+const mainScreenOptions: NativeStackNavigationOptions = { headerShown: false };
 
-const AuthStack = () => (
+const AuthStack: React.FC = () => (
   <AuthStackNav.Navigator
     initialRouteName={navigationStrings.Login}
     screenOptions={authScreenOptions}
@@ -53,18 +45,12 @@ const AuthStack = () => (
   </AuthStackNav.Navigator>
 );
 
-const MainStack = () => (
-  <MainStackNav.Navigator
-    initialRouteName={navigationStrings.Home}
-    screenOptions={mainScreenOptions}
-  >
+const MainStack: React.FC = () => (
+  <MainStackNav.Navigator screenOptions={mainScreenOptions}>
+    <MainStackNav.Screen name="Tabs" component={TabNavigation} />
     <MainStackNav.Screen
-      name={navigationStrings.Home}
-      component={screens.Home}
-    />
-    <MainStackNav.Screen
-      name={navigationStrings.Setting}
-      component={screens.Setting}
+      name={navigationStrings.Profile}
+      component={screens.Profile}
     />
   </MainStackNav.Navigator>
 );
@@ -111,9 +97,7 @@ const Navigation: React.FC = () => {
           ) : !isAuthenticated ? (
             <RootStack.Screen name="AuthStack" component={AuthStack} />
           ) : (
-            <RootStack.Screen name="MainStack">
-              {() => <MainStack />}
-            </RootStack.Screen>
+            <RootStack.Screen name="MainStack" component={MainStack} />
           )}
         </RootStack.Navigator>
       </Suspense>

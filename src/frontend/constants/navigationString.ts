@@ -5,6 +5,8 @@ const navigationStrings = {
   Register: 'Register',
   Home: 'Home',
   Setting: 'Setting',
+  Chat: 'Chat',
+  Profile: 'Profile',
 } as const;
 
 export default navigationStrings;

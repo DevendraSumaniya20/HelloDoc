@@ -20,6 +20,9 @@ export type MainStackParamList = {
   Splash: undefined;
   Home: undefined;
   Setting: undefined;
+  Chat: { doctor: Doctor };
+  Tabs: undefined;
+  Profile: undefined;
 };
 
 /**
@@ -32,8 +35,8 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Splash: undefined;
-  Home: undefined;
   Setting: undefined;
+  Profile: undefined;
 };
 
 // --- Extend React Navigation types globally ---
