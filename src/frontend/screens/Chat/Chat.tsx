@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
-  SafeAreaView,
   FlatList,
   Dimensions,
 } from 'react-native';
@@ -18,6 +17,7 @@ import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from '../../types/types';
 import { moderateScale } from '../../constants/responsive';
 import Colors from '../../constants/color';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
