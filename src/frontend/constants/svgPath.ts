@@ -8,6 +8,14 @@ import Chat from '../assets/svg/chat.svg';
 import Profile from '../assets/svg/user.svg';
 import Setting from '../assets/svg/setting.svg';
 import Search from '../assets/svg/search.svg';
+import Call from '../assets/svg/call.svg';
+import Camera from '../assets/svg/camera.svg';
+import Clip from '../assets/svg/clip.svg';
+import Dots from '../assets/svg/dots.svg';
+import MicroPhone from '../assets/svg/microphone.svg';
+import Sticker from '../assets/svg/sticker.svg';
+import Video from '../assets/svg/video.svg';
+
 
 const Icons = {
   Cross,
@@ -20,6 +28,11 @@ const Icons = {
   Profile,
   Setting,
   Search,
+  Call,Camera, Clip,
+  Dots,
+  MicroPhone,
+  Sticker,
+  Video
 };
 
 export default Icons;

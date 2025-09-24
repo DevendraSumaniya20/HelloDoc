@@ -10,6 +10,7 @@ import {
 import { Doctor } from '../types/types';
 import Colors from '../constants/color';
 import { moderateScale } from '../constants/responsive';
+import Icons from '../constants/svgPath';
 
 interface ChatHeaderProps {
   doctor: Doctor;
@@ -42,7 +43,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backIcon} onPress={onBack}>
-          <Text style={styles.backIconText}>←</Text>
+          <Icons.LeftArrow height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white} stroke={Colors.white}/>
         </TouchableOpacity>
 
         <View style={styles.doctorInfo}>
@@ -67,13 +68,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.actionButton} onPress={onCall}>
-            <Text style={styles.actionButtonText}>📞</Text>
+            
+            <Icons.Call height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onVideoCall}>
-            <Text style={styles.actionButtonText}>📹</Text>
+            <Icons.Video height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white}  stroke={Colors.white}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onInfo}>
-            <Text style={styles.actionButtonText}>ⓘ</Text>
+            <Icons.Dots height={moderateScale(16)} width={moderateScale(16)}  fill={Colors.white} stroke={Colors.white}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -83,7 +85,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.neutral,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: moderateScale(16),
