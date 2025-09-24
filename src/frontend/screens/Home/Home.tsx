@@ -32,26 +32,28 @@ const Home: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const topDoctors: Doctor[] = [
-    {
-      id: '1',
-      name: 'Dr. Marcus Horizon',
-      specialty: 'Chardiologist',
-      rating: 4.7,
-      reviews: 5,
-      image:
-        'https://thumbs.dreamstime.com/b/indian-doctor-mature-male-medical-standing-inside-hospital-handsome-model-portrait-43992356.jpg',
-      isOnline: true,
-    },
-    {
-      id: '2',
-      name: 'Dr. Maria Elena',
-      specialty: 'Psychologist',
-      rating: 4.9,
-      reviews: 10,
-      image:
-        'https://img.freepik.com/free-photo/pleased-young-female-doctor-wearing-medical-robe-stethoscope-around-neck-standing-with-closed-posture_409827-254.jpg',
-    },
-  ];
+  {
+    id: '1',
+    name: 'Dr. Marcus Horizon',
+    specialty: 'Cardiology', // Fixed typo from 'Chardiologist'
+    rating: 4.7,
+    reviews: 5,
+    image:
+      'https://thumbs.dreamstime.com/b/indian-doctor-mature-male-medical-standing-inside-hospital-handsome-model-portrait-43992356.jpg',
+    isOnline: true,
+    isAI: true, // Add this to indicate it's an AI doctor
+  },
+  {
+    id: '2',
+    name: 'Dr. Maria Elena',
+    specialty: 'Psychology', // Fixed from 'Psychologist'
+    rating: 4.9,
+    reviews: 10,
+    image:
+      'https://img.freepik.com/free-photo/pleased-young-female-doctor-wearing-medical-robe-stethoscope-around-neck-standing-with-closed-posture_409827-254.jpg',
+    isAI: true, // Add this to indicate it's an AI doctor
+  },
+];
 
   const healthCategories: HealthCategory[] = [
     { id: '1', name: 'Gastroenterologist', icon: '🫁', color: '#E8F4FD' },
@@ -153,14 +155,25 @@ const Home: React.FC = () => {
               </TouchableOpacity>
             </View>
             {topDoctors.map(doc => (
-              <Components.DoctorCard
-                key={doc.id}
-                doctor={doc}
-                onConsult={() =>
-                  navigation.navigate(navigationStrings.Chat, { doctor: doc })
-                }
-              />
-            ))}
+  <Components.DoctorCard
+    key={doc.id}
+    doctor={doc}
+    onConsult={() => {
+      console.log('Home - DoctorCard onConsult pressed');
+      console.log('Home - Doctor data:', doc);
+      console.log('Home - Navigation object:', navigation);
+      console.log('Home - Navigation string:', navigationStrings.Chat);
+      
+      try {
+        console.log('Home - About to navigate to Chat');
+        navigation.navigate(navigationStrings.Chat, { doctor: doc });
+        console.log('Home - Navigation call completed');
+      } catch (error) {
+        console.error('Home - Navigation error:', error);
+      }
+    }}
+  />
+))}
           </View>
 
           <View style={HomeStyle.section}>

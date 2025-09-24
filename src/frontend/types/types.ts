@@ -96,6 +96,24 @@ export interface RegisterData {
 /**
  * --- DOMAIN MODELS ---
  */
+
+export interface HealthCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
+
+export interface Message {
+  id: string;
+  text: string;
+  sender: 'user' | 'doctor';
+  timestamp: Date;
+  type?: 'text' | 'image' | 'voice';
+  isLoading?: boolean; // For showing loading state
+  error?: boolean; // For error states
+}
+
 export interface Doctor {
   id: string;
   name: string;
@@ -103,12 +121,13 @@ export interface Doctor {
   rating: number;
   reviews: number;
   image: string;
+  status?: 'online' | 'offline' | 'busy';
+  lastSeen?: string;
+  isAI?: boolean; // Flag to identify AI doctors
   isOnline?: boolean;
 }
 
-export interface HealthCategory {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
+export interface OpenAIResponse {
+  role: string;
+  content: string;
 }
