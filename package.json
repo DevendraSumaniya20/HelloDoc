@@ -7,7 +7,11 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "asset-refresh": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "build-android": "npm run build-android:win || npm run build-android:unix",
+    "build-android:win": "cd android && gradlew.bat assembleDebug",
+    "build-android:unix": "cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
     "@apollo/client": "^4.0.5",

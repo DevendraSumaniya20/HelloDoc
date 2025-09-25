@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   textContainer: {
     alignItems: 'center',
     marginBottom: moderateScale(20),
-    zIndex: 2, // ensures it sits above background
+    zIndex: 2,
   },
 
   // subtitle style
