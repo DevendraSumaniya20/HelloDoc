@@ -2,21 +2,20 @@ import React, { FC, useEffect } from 'react';
 import { Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { getGradientProps } from '../../utils/gradients';
 import Colors from '../../constants/color';
 import SplashStyle from './SplashStyle';
-import { useAuth } from '../../hooks/AuthContext';
-import navigationStrings from '../../constants/navigationString';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
-import { useNavigation } from '@react-navigation/native';
+import navigationStrings from '../../constants/navigationString';
 import {
   checkFirstLaunch,
+  getUserFromStorage,
   setFirstLaunch,
 } from '../../services/storageService';
+import { getGradientProps } from '../../utils/gradients';
 
 const Splash: FC = () => {
-  const { isAuthenticated } = useAuth();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -24,34 +23,34 @@ const Splash: FC = () => {
     const timer = setTimeout(async () => {
       try {
         const hasLaunched = await checkFirstLaunch();
+        const user = await getUserFromStorage();
 
         if (!hasLaunched) {
-          // first launch → navigate to Intro
+          // First launch → show Intro
           await setFirstLaunch();
           navigation.replace(navigationStrings.Intro);
         } else {
-          // not first launch → navigate to Auth or Main
-          if (isAuthenticated) {
-            navigation.replace('MainStack');
+          // Not first launch → check if user is logged in
+          if (user) {
+            navigation.replace('MainStack'); // logged in → home
           } else {
-            navigation.replace('AuthStack');
+            navigation.replace('AuthStack'); // not logged in → login/signup
           }
         }
       } catch (error) {
-        console.error('Error checking first launch:', error);
+        console.error('Splash navigation error:', error);
         navigation.replace('AuthStack');
       }
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, navigation]);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient {...getGradientProps()} style={SplashStyle.container}>
         <Text style={SplashStyle.title}>Hello Doc</Text>
         <Text style={SplashStyle.subtitle}>Your health, our priority</Text>
-
         <ActivityIndicator
           size="large"
           color={Colors.accent}

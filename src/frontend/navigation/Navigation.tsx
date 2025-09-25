@@ -1,10 +1,11 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import screens from '../screens';
 import navigationStrings from '../constants/navigationString';
 import {
@@ -12,6 +13,7 @@ import {
   AuthStackParamList,
   MainStackParamList,
 } from '../types/types';
+import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
 import TabNavigation from './TabNavigation';
 
@@ -69,6 +71,24 @@ const MainStack: React.FC = () => (
 
 // --- Root Navigation ---
 const Navigation: React.FC = () => {
+  const { isAuthenticated, initializing, isFirstLaunch } = useAuth();
+  const [initialRoute, setInitialRoute] = useState<
+    keyof RootStackParamList | null
+  >(null);
+
+  useEffect(() => {
+    // Splash is always the first route
+    setInitialRoute(navigationStrings.Splash);
+  }, []);
+
+  if (initializing || initialRoute === null) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Suspense
@@ -78,20 +98,26 @@ const Navigation: React.FC = () => {
           </View>
         }
       >
-        <RootStack.Navigator screenOptions={defaultScreenOptions}>
-          {/* Splash screen is always first */}
+        <RootStack.Navigator
+          initialRouteName={initialRoute}
+          screenOptions={defaultScreenOptions}
+        >
+          {/* Always show splash first */}
           <RootStack.Screen
             name={navigationStrings.Splash}
             component={screens.Splash}
             options={{ animation: 'fade' }}
           />
 
-          {/* Intro screen (Splash decides if it should navigate here) */}
-          <RootStack.Screen
-            name={navigationStrings.Intro}
-            component={screens.Intro}
-            options={{ animation: 'fade' }}
-          />
+          {/* Show intro only if first launch */}
+
+          {isFirstLaunch && (
+            <RootStack.Screen
+              name={navigationStrings.Intro}
+              component={screens.Intro}
+              options={{ animation: 'fade' }}
+            />
+          )}
 
           {/* Auth flow */}
           <RootStack.Screen

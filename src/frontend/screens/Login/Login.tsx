@@ -103,7 +103,7 @@ const Login: React.FC = () => {
 
       if (success) {
         Alert.alert('Success', 'Welcome back!', [
-          { text: 'OK', onPress: () => navigation.navigate('Home') },
+          { text: 'OK', onPress: () => navigation.navigate('MainStack') },
         ]);
       } else {
         setErrors({ password: 'Invalid email or password' });

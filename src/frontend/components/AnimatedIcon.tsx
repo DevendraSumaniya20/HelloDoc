@@ -9,7 +9,7 @@ import { moderateScale } from '../constants/responsive';
 
 interface AnimatedIconProps {
   icon: string | React.ReactNode;
-  emoji: string;
+  emoji: string | React.ReactNode;
   gradient?: string[];
 }
 

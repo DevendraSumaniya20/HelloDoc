@@ -1,0 +1,125 @@
+"filename", "language", "TypeScript JSX", "TypeScript", "XML", "JSON with Comments", "JavaScript JSX", "JSON", "Ruby", "JavaScript", "Markdown", "Environment Variables", "Objective-C", "Swift", "Groovy", "Properties", "C++", "Batch", "Makefile", "comment", "blank", "total"
+"/Users/birajtech/Desktop/HelloDoc/.eslintrc.js", "JavaScript JSX", 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/birajtech/Desktop/HelloDoc/.prettierrc.js", "JavaScript JSX", 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/birajtech/Desktop/HelloDoc/.watchmanconfig", "JSON", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/birajtech/Desktop/HelloDoc/App.tsx", "TypeScript JSX", 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 36
+"/Users/birajtech/Desktop/HelloDoc/Gemfile", "Ruby", 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 17
+"/Users/birajtech/Desktop/HelloDoc/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 100
+"/Users/birajtech/Desktop/HelloDoc/__tests__/App.test.tsx", "TypeScript JSX", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 14
+"/Users/birajtech/Desktop/HelloDoc/android/app/build.gradle", "Groovy", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 61, 11, 120
+"/Users/birajtech/Desktop/HelloDoc/android/app/google-services.json", "JSON", 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 55
+"/Users/birajtech/Desktop/HelloDoc/android/app/src/debug/AndroidManifest.xml", "XML", 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 10
+"/Users/birajtech/Desktop/HelloDoc/android/app/src/main/AndroidManifest.xml", "XML", 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 27
+"/Users/birajtech/Desktop/HelloDoc/android/app/src/main/res/drawable/rn_edit_text_material.xml", "XML", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 3, 38
+"/Users/birajtech/Desktop/HelloDoc/android/app/src/main/res/values/strings.xml", "XML", 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/birajtech/Desktop/HelloDoc/android/app/src/main/res/values/styles.xml", "XML", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 10
+"/Users/birajtech/Desktop/HelloDoc/android/build.gradle", "Groovy", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 4, 26
+"/Users/birajtech/Desktop/HelloDoc/android/gradle.properties", "Properties", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 29, 10, 45
+"/Users/birajtech/Desktop/HelloDoc/android/gradle/wrapper/gradle-wrapper.properties", "Properties", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"/Users/birajtech/Desktop/HelloDoc/android/gradlew.bat", "Batch", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 36, 23, 100
+"/Users/birajtech/Desktop/HelloDoc/android/settings.gradle", "Groovy", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 1, 7
+"/Users/birajtech/Desktop/HelloDoc/app.json", "JSON", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/birajtech/Desktop/HelloDoc/babel.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/birajtech/Desktop/HelloDoc/declarations.d.ts", "TypeScript", 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 42
+"/Users/birajtech/Desktop/HelloDoc/index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 11
+"/Users/birajtech/Desktop/HelloDoc/ios/.xcode.env", "Environment Variables", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 9, 2, 12
+"/Users/birajtech/Desktop/HelloDoc/ios/AppDelegate.m", "Objective-C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 6, 2, 9
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc-Bridging-Header.h", "C++", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 4, 3, 18
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc/AppDelegate.m", "Objective-C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 6, 2, 9
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc/AppDelegate.swift", "Swift", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 15, 56
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc/Images.xcassets/AppIcon.appiconset/Contents.json", "JSON", 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 54
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc/Images.xcassets/Contents.json", "JSON", 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/birajtech/Desktop/HelloDoc/ios/HelloDoc/LaunchScreen.storyboard", "XML", 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 48
+"/Users/birajtech/Desktop/HelloDoc/ios/Podfile", "Ruby", 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 9, 53
+"/Users/birajtech/Desktop/HelloDoc/jest.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/birajtech/Desktop/HelloDoc/metro.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 37
+"/Users/birajtech/Desktop/HelloDoc/package.json", "JSON", 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 71
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/apollo/client.ts", "TypeScript", 0, 175, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 29, 212
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/apollo/queries.ts", "TypeScript", 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/bell.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/bolt.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/bullseye-arrow.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/call.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/camera.svg", "XML", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 17
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/chart-bar.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/chart-line.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/chat.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/clip.svg", "XML", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 14
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/clipboard-text.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/clock.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/cross.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/doctor.svg", "XML", 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 100
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/dots.svg", "XML", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/eye-off.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/eye-on.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/google.svg", "XML", 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/hospital.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/house.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/left-arrow.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/microphone.svg", "XML", 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 15
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/mobile-alt.svg", "XML", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/robot.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/rocket.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/search.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/setting.svg", "XML", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/sticker.svg", "XML", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/trophy.svg", "XML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/user.svg", "XML", 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 9
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/assets/svg/video.svg", "XML", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 13
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/AnimatedIcon.tsx", "TypeScript JSX", 151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 166
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/AuthHeader.tsx", "TypeScript JSX", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/CategoryCard.tsx", "TypeScript JSX", 52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 58
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/ChatHeader.tsx", "TypeScript JSX", 159, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 168
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/CheckboxWithTerms.tsx", "TypeScript JSX", 144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 151
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/Divider.tsx", "TypeScript JSX", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 20
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/DoctorCard.tsx", "TypeScript JSX", 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 115
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/DoctorInfoCard.tsx", "TypeScript JSX", 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 87
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/ErrorBoundary.tsx", "TypeScript JSX", 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 69
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/FooterLink.tsx", "TypeScript JSX", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 41
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/InputField.tsx", "TypeScript JSX", 188, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 199
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/MessageBubble.tsx", "TypeScript JSX", 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 122
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/MessageInput.tsx", "TypeScript JSX", 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 130
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/ParticleBackground.tsx", "TypeScript JSX", 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 10, 102
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/PrimaryButton.tsx", "TypeScript JSX", 147, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 156
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/SlideContent.tsx", "TypeScript JSX", 199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9, 210
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/SocialButton.tsx", "TypeScript JSX", 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 111
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/TypingIndicator.tsx", "TypeScript JSX", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 120
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/components/index.tsx", "TypeScript JSX", 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 42
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/constants/chatConstants.ts", "TypeScript", 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 35
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/constants/color.ts", "TypeScript", 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, 45
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/constants/navigationString.ts", "TypeScript", 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 14
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/constants/responsive.ts", "TypeScript", 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 10, 55
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/constants/svgPath.ts", "TypeScript", 0, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 66
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/hooks/AuthContext.tsx", "TypeScript JSX", 447, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 84, 557
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/hooks/useChat.ts", "TypeScript", 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 33, 198
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/navigation/Navigation.tsx", "TypeScript JSX", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 13, 125
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/navigation/TabNavigation.tsx", "TypeScript JSX", 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 65
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Chat/Chat.tsx", "TypeScript JSX", 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 162
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Chat/ChatStyle.tsx", "TypeScript JSX", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Home/Home.tsx", "TypeScript JSX", 182, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 199
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Home/HomeStyle.tsx", "TypeScript JSX", 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 127
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Intro/Intro.tsx", "TypeScript JSX", 274, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 18, 299
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Intro/IntroStyle.tsx", "TypeScript JSX", 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 92
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Login/Login.tsx", "TypeScript JSX", 259, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 35, 306
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Login/LoginStyle.tsx", "TypeScript JSX", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Profile/Profile.tsx", "TypeScript JSX", 437, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 32, 481
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Profile/ProfileStyle.tsx", "TypeScript JSX", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Register/Register.tsx", "TypeScript JSX", 390, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 45, 456
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Register/RegisterStyle.tsx", "TypeScript JSX", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Setting/Setting.tsx", "TypeScript JSX", 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 102
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Setting/SettingStyle.tsx", "TypeScript JSX", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Splash/Splash.tsx", "TypeScript JSX", 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 66
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/Splash/SplashStyle.tsx", "TypeScript JSX", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 32
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/screens/index.tsx", "TypeScript JSX", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 26
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/services/authService.ts", "TypeScript", 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 40
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/services/chatService.ts", "TypeScript", 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 11, 73
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/services/firestoreService.ts", "TypeScript", 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 38
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/services/storageService.ts", "TypeScript", 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 18
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/store/store.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/types/types.ts", "TypeScript", 0, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 15, 144
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/utils/chatHelpers.ts", "TypeScript", 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 48
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/utils/gradients.tsx", "TypeScript JSX", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 22
+"/Users/birajtech/Desktop/HelloDoc/src/frontend/utils/validation.tsx", "TypeScript JSX", 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/birajtech/Desktop/HelloDoc/tsconfig.json", "JSON with Comments", 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13
+"/Users/birajtech/Desktop/HelloDoc/vendor/bundle/ruby/3.4.0/gems/ffi-1.17.2/ext/ffi_c/libffi/testsuite/libffi.bhaible/Makefile", "Makefile", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 7, 29
+"Total", "-", 4736, 801, 355, 12, 9, 188, 49, 33, 62, 1, 2, 41, 76, 13, 11, 41, 22, 405, 795, 7652
