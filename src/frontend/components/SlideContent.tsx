@@ -1,38 +1,36 @@
-// SlideContent.tsx
 import React from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { BlurView } from '@react-native-community/blur'; // For iOS-style frosted glass effect
-import LinearGradient from 'react-native-linear-gradient'; // For gradient backgrounds
-import Colors from '../constants/color'; // Custom color palette
-import { moderateScale } from '../constants/responsive'; // Utility for scaling sizes across devices
 
-// Feature card interface (icon + text + color)
+import Colors from '../constants/color'; // centralized color constants
+import { moderateScale } from '../constants/responsive'; // scales
+import Icons from '../constants/svgPath'; // SVG icons
+
+// Interface for a single feature card
 interface Feature {
-  icon: React.ReactNode | string; // Icon can be a React component or plain string (emoji/symbol)
-  text: string; // Feature label
-  color: string; // Color for icon or background
+  icon: React.ReactNode | string; // feature icon can be a ReactNode or string path
+  text: string; // feature description
+  color: string; // color for icon or feature (if needed)
 }
 
-// Slide interface (each onboarding slide data model)
+// Interface for a slide
 export interface Slide {
-  id: number; // Unique ID
-  title: string; // Slide title
-  subtitle: string; // Small badge-like subtitle
-  description: string; // Supporting text
-  icon: string | React.ReactNode; // Icon for slide
-  emoji: string | React.ReactNode; // Decorative emoji or icon
-  gradient: string[]; // Gradient colors for backgrounds
-  features: Feature[]; // List of feature cards
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string | React.ReactNode; // main icon for the slide
+  emoji: string | React.ReactNode; // optional emoji/icon
+  gradient: string[]; // background gradient colors
+  features: Feature[]; // array of features
 }
 
-// Props passed into SlideContent
+// Props for SlideContent component
 interface SlideContentProps {
-  item: Slide; // Current slide data
-  slideAnim: Animated.Value; // Animation value for vertical translation
-  fadeAnim: Animated.Value; // Animation value for opacity fade
+  item: Slide; // slide data
+  slideAnim: Animated.Value; // animated value for slide transition
+  fadeAnim: Animated.Value; // animated value for fade effect
 }
 
-// Main component rendering the content of a slide
 const SlideContent: React.FC<SlideContentProps> = ({
   item,
   slideAnim,
@@ -40,40 +38,36 @@ const SlideContent: React.FC<SlideContentProps> = ({
 }) => {
   return (
     <>
-      {/* Animated container for title, subtitle, and description */}
+      {/* Animated text container */}
       <Animated.View
         style={[
           styles.textContainer,
           {
-            opacity: fadeAnim, // Fade in/out effect
+            opacity: fadeAnim, // fade in/out animation
             transform: [
               {
                 translateY: slideAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -20], // Subtle upward motion
+                  outputRange: [0, -20], // slide text up slightly
                 }),
               },
             ],
           },
         ]}
       >
-        {/* Subtitle badge with gradient background */}
+        {/* Subtitle */}
         <View style={styles.subtitleContainer}>
-          <LinearGradient
-            colors={['rgba(255,255,255,0.25)', 'rgba(255,255,255,0.15)']}
-            style={styles.subtitleBadge}
-          >
-            <Text style={styles.subtitle}>{item.subtitle}</Text>
-          </LinearGradient>
+          <Text style={styles.subtitle}>{item.subtitle}</Text>
         </View>
 
-        {/* Slide title */}
+        {/* Title */}
         <Text style={styles.title}>{item.title}</Text>
-        {/* Slide description */}
+
+        {/* Description */}
         <Text style={styles.description}>{item.description}</Text>
       </Animated.View>
 
-      {/* Features list (cards under description) */}
+      {/* Features list */}
       <View style={styles.featureContainer}>
         {item.features.map((feature, index) => (
           <Animated.View
@@ -85,37 +79,34 @@ const SlideContent: React.FC<SlideContentProps> = ({
                   {
                     translateY: slideAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, index * 5], // Small staggered effect for stacked cards
+                      outputRange: [0, index * 5], // staggered vertical movement
                     }),
                   },
                 ],
               },
             ]}
           >
-            {/* Card with frosted-glass background */}
-            <BlurView
-              style={styles.featureBlur}
-              blurType="light"
-              blurAmount={10}
-              reducedTransparencyFallbackColor={Colors.white}
-            >
+            {/* Feature card background */}
+            <View style={styles.featureBackground}>
               <View style={styles.featureContent}>
-                {/* Icon inside circle background */}
-                <View style={styles.featureIconContainer}>
-                  {typeof feature.icon === 'string' ? (
-                    <Text style={styles.featureIcon}>{feature.icon}</Text>
-                  ) : (
-                    feature.icon
-                  )}
-                </View>
-                {/* Feature label text */}
+                {/* Feature icon */}
+                <View style={styles.featureIconContainer}>{feature.icon}</View>
+
+                {/* Feature text */}
                 <Text style={styles.featureText}>{feature.text}</Text>
-                {/* Arrow on the right side */}
+
+                {/* Arrow icon (rotated to point right) */}
                 <View style={styles.featureArrow}>
-                  <Text style={styles.arrowIcon}>→</Text>
+                  <Icons.LeftArrow
+                    height={moderateScale(24)}
+                    width={moderateScale(24)}
+                    fill={Colors.white}
+                    style={{ transform: [{ rotate: '180deg' }] }}
+                    stroke={Colors.white}
+                  />
                 </View>
               </View>
-            </BlurView>
+            </View>
           </Animated.View>
         ))}
       </View>
@@ -125,73 +116,83 @@ const SlideContent: React.FC<SlideContentProps> = ({
 
 export default SlideContent;
 
+// ------------------- STYLES -------------------
 const styles = StyleSheet.create({
-  // Container for all text (subtitle, title, description)
+  // container for text content
   textContainer: {
     alignItems: 'center',
     marginBottom: moderateScale(20),
-    zIndex: 2,
+    zIndex: 2, // ensures it sits above background
   },
-  // Wrapper for subtitle badge
+
+  // subtitle style
+  subtitle: {
+    fontSize: moderateScale(14),
+    fontWeight: '700',
+    color: Colors.white,
+    textTransform: 'uppercase',
+    letterSpacing: moderateScale(1),
+    textAlign: 'center',
+  },
   subtitleContainer: {
-    marginBottom: moderateScale(8),
+    marginBottom: moderateScale(12),
   },
-  // Subtitle badge style with border + gradient
   subtitleBadge: {
     paddingHorizontal: moderateScale(12),
     paddingVertical: moderateScale(4),
-    borderRadius: moderateScale(15),
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: moderateScale(8),
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // Subtitle text
-  subtitle: {
-    fontSize: moderateScale(10),
-    fontWeight: '700',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
-    letterSpacing: moderateScale(1),
-  },
-  // Title text (large bold heading)
+
+  // title style
   title: {
     fontSize: moderateScale(26),
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: Colors.white,
     textAlign: 'center',
     marginBottom: moderateScale(10),
     lineHeight: moderateScale(32),
   },
-  // Description text (supportive paragraph)
+
+  // description text style
   description: {
     fontSize: moderateScale(14),
-    color: 'rgba(255,255,255,0.9)',
+    color: Colors.white,
     textAlign: 'center',
     lineHeight: moderateScale(20),
   },
-  // Container for all feature cards
+
+  // container for features
   featureContainer: {
     width: '100%',
     zIndex: 2,
   },
-  // Individual feature card
+
+  // individual feature card
   featureCard: {
     marginBottom: moderateScale(10),
     borderRadius: moderateScale(14),
-    overflow: 'hidden', // Ensures BlurView + children stay inside rounded border
+    overflow: 'hidden',
   },
-  // BlurView style for frosted glass background
-  featureBlur: {
+
+  // background for feature card
+  featureBackground: {
     borderRadius: moderateScale(14),
     borderWidth: 1,
     borderColor: Colors.grayUltraLight,
+    backgroundColor: 'transparent',
   },
-  // Inner row of feature card (icon + text + arrow)
+
+  // inner content of feature card
   featureContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: moderateScale(12),
   },
-  // Circle container for feature icon
+
+  // container for icon in feature card
   featureIconContainer: {
     width: moderateScale(40),
     height: moderateScale(40),
@@ -199,32 +200,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: moderateScale(12),
-    backgroundColor: 'rgba(255,255,255,0.2)', // Semi-transparent background
+    backgroundColor: Colors.grayUltraLight,
+    overflow: 'hidden',
+    elevation: 1,
   },
-  // Feature icon text style
-  featureIcon: {
-    fontSize: moderateScale(18),
-  },
-  // Feature text style
+
+  // feature text
   featureText: {
     flex: 1,
     fontSize: moderateScale(14),
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.white,
   },
-  // Small rounded arrow container
+
+  // container for arrow icon
   featureArrow: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: moderateScale(10),
-    width: moderateScale(20),
-    height: moderateScale(20),
+    borderRadius: moderateScale(20),
+    width: moderateScale(40),
+    height: moderateScale(40),
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  // Arrow text style
-  arrowIcon: {
-    fontSize: moderateScale(12),
-    color: '#FFFFFF',
-    fontWeight: 'bold',
   },
 });

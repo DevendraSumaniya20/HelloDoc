@@ -25,11 +25,7 @@ import { RootStackParamList } from '../../types/types';
 const { width } = Dimensions.get('window');
 
 // -----------------------------------------------------------------------------
-// Slide data - each slide contains:
-// - Title, subtitle, description
-// - Icon & emoji (React components)
-// - Gradient background
-// - Features list (with icons & text)
+// Slide data
 // -----------------------------------------------------------------------------
 const slides: Slide[] = [
   {
@@ -47,20 +43,29 @@ const slides: Slide[] = [
       />
     ),
     emoji: <Icons.Bolt height={moderateScale(20)} width={moderateScale(20)} />,
-    gradient: ['#667eea', '#764ba2', '#f093fb'],
+    gradient: [Colors.primary, Colors.primaryLight, Colors.accentLight],
     features: [
       {
-        icon: <Icons.Bolt height={20} width={20} />,
+        icon: (
+          <Icons.Bolt height={moderateScale(20)} width={moderateScale(20)} />
+        ),
         text: 'Lightning-Fast Analysis',
         color: Colors.white,
       },
       {
-        icon: <Icons.BullsEye height={20} width={20} />,
+        icon: (
+          <Icons.BullsEye
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        ),
         text: 'Precision Diagnostics',
         color: Colors.white,
       },
       {
-        icon: <Icons.Clock height={20} width={20} />,
+        icon: (
+          <Icons.Clock height={moderateScale(20)} width={moderateScale(20)} />
+        ),
         text: 'Available 24/7',
         color: Colors.white,
       },
@@ -72,24 +77,42 @@ const slides: Slide[] = [
     subtitle: 'Professional Care',
     description:
       'Connect with world-class medical professionals and AI specialists. Get personalized treatment plans tailored to your health.',
-    icon: <Icons.Doctor height={moderateScale(60)} width={moderateScale(60)} />,
+    icon: (
+      <Icons.Doctor
+        height={moderateScale(60)}
+        width={moderateScale(60)}
+        fill={Colors.white}
+      />
+    ),
     emoji: (
       <Icons.Trophy height={moderateScale(20)} width={moderateScale(20)} />
     ),
-    gradient: ['#667eea', '#764ba2', '#f093fb'],
+    gradient: [Colors.primary, Colors.primaryLight, Colors.accentLight],
     features: [
       {
-        icon: <Icons.Hospital height={20} width={20} />,
+        icon: (
+          <Icons.Hospital
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        ),
         text: 'Certified Specialists',
         color: Colors.white,
       },
       {
-        icon: <Icons.Chat height={20} width={20} />,
+        icon: (
+          <Icons.Chat height={moderateScale(20)} width={moderateScale(20)} />
+        ),
         text: 'Real-time Consultations',
         color: Colors.white,
       },
       {
-        icon: <Icons.ClipboardText height={20} width={20} />,
+        icon: (
+          <Icons.ClipboardText
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        ),
         text: 'Custom Treatment Plans',
         color: Colors.white,
       },
@@ -102,25 +125,41 @@ const slides: Slide[] = [
     description:
       'Transform your health journey with intelligent analytics and personalized insights. Track progress and achieve wellness goals.',
     icon: (
-      <Icons.ChartBar height={moderateScale(60)} width={moderateScale(60)} />
+      <Icons.ChartBar
+        height={moderateScale(60)}
+        width={moderateScale(60)}
+        // fill={Colors.white}
+      />
     ),
     emoji: (
       <Icons.Rocket height={moderateScale(20)} width={moderateScale(20)} />
     ),
-    gradient: ['#667eea', '#764ba2', '#f093fb'],
+    gradient: [Colors.primary, Colors.primaryLight, Colors.accentLight],
     features: [
       {
-        icon: <Icons.ChartLine height={20} width={20} />,
+        icon: (
+          <Icons.ChartLine
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        ),
         text: 'Advanced Analytics',
         color: Colors.white,
       },
       {
-        icon: <Icons.Bell height={20} width={20} />,
+        icon: (
+          <Icons.Bell height={moderateScale(20)} width={moderateScale(20)} />
+        ),
         text: 'Smart Notifications',
         color: Colors.white,
       },
       {
-        icon: <Icons.MobileAlt height={20} width={20} />,
+        icon: (
+          <Icons.MobileAlt
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        ),
         text: 'Seamless Experience',
         color: Colors.white,
       },
@@ -134,20 +173,14 @@ const slides: Slide[] = [
 const Intro: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  // Current slide index
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // ScrollView ref for programmatic navigation
   const scrollRef = useRef<ScrollView>(null);
 
-  // Animation refs
-  const fadeAnim = useRef(new Animated.Value(1)).current; // Fades in/out slide
-  const scaleAnim = useRef(new Animated.Value(1)).current; // Scales slide
-  const slideAnim = useRef(new Animated.Value(0)).current; // Slide transition
-  const pulseAnim = useRef(new Animated.Value(1)).current; // Pagination pulse
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
-  // Handle manual scrolling between slides
   const handleScroll = (event: any) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
     if (index !== currentSlide) {
@@ -156,7 +189,6 @@ const Intro: React.FC = () => {
     }
   };
 
-  // Animate slide transition (small bump effect)
   const animateSlideTransition = () => {
     Animated.sequence([
       Animated.timing(slideAnim, {
@@ -172,18 +204,15 @@ const Intro: React.FC = () => {
     ]).start();
   };
 
-  // Navigate to a specific slide
   const goToSlide = (index: number) => {
     scrollRef.current?.scrollTo({ x: index * width, animated: true });
     setCurrentSlide(index);
   };
 
-  // Next / Previous slide handlers
   const nextSlide = () =>
     currentSlide < slides.length - 1 && goToSlide(currentSlide + 1);
   const prevSlide = () => currentSlide > 0 && goToSlide(currentSlide - 1);
 
-  // Final "Get Started" handler
   const handleGetStarted = async () => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -206,22 +235,19 @@ const Intro: React.FC = () => {
     });
   };
 
-  // ---------------------------------------------------------------------------
-  // Pagination dots (animated scale + color change)
-  // ---------------------------------------------------------------------------
-
   const renderPaginationWithArrows = () => (
     <View style={IntroStyle.paginationContainer}>
       {/* Left Arrow */}
       {currentSlide > 0 ? (
-        <TouchableOpacity
-          style={IntroStyle.arrowButton} // new style for white circle background
-          onPress={prevSlide}
-        >
-          <Icons.LeftArrow height={20} width={20} fill={Colors.white} />
+        <TouchableOpacity style={IntroStyle.arrowButton} onPress={prevSlide}>
+          <Icons.LeftArrow
+            height={moderateScale(24)}
+            width={moderateScale(24)}
+            fill={Colors.white}
+          />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 40 }} /> // placeholder
+        <View style={{ width: moderateScale(40) }} />
       )}
 
       {/* Pagination Dots */}
@@ -234,7 +260,11 @@ const Intro: React.FC = () => {
                 {
                   backgroundColor:
                     index === currentSlide ? Colors.white : Colors.grayMedium,
-                  width: index === currentSlide ? 32 : 12,
+                  width:
+                    index === currentSlide
+                      ? moderateScale(32)
+                      : moderateScale(12),
+                  height: moderateScale(8),
                 },
               ]}
             />
@@ -244,30 +274,20 @@ const Intro: React.FC = () => {
 
       {/* Right Arrow */}
       {currentSlide < slides.length - 1 ? (
-        <TouchableOpacity
-          style={IntroStyle.arrowButton} // new style for white circle background
-          onPress={nextSlide}
-        >
+        <TouchableOpacity style={IntroStyle.arrowButton} onPress={nextSlide}>
           <Icons.LeftArrow
-            height={20}
-            width={20}
+            height={moderateScale(24)}
+            width={moderateScale(24)}
             fill={Colors.white}
             style={{ transform: [{ rotate: '180deg' }] }}
           />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 40 }} /> // placeholder
+        <View style={{ width: moderateScale(40) }} />
       )}
     </View>
   );
 
-  // ---------------------------------------------------------------------------
-  // Navigation buttons (Back, Next, Get Started)
-  // ---------------------------------------------------------------------------
-
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
   return (
     <SafeAreaView style={IntroStyle.container}>
       <LinearGradient
@@ -276,17 +296,14 @@ const Intro: React.FC = () => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        {/* Particle background effect */}
         <Components.ParticleBackground />
 
-        {/* Main animated content */}
         <Animated.View
           style={[
             IntroStyle.content,
             { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
           ]}
         >
-          {/* Slide carousel */}
           <ScrollView
             ref={scrollRef}
             horizontal
@@ -310,12 +327,8 @@ const Intro: React.FC = () => {
             ))}
           </ScrollView>
 
-          {/* Pagination + Buttons */}
-
           {renderPaginationWithArrows()}
 
-          {/* Skip option (only before last slide) */}
-          {/* Skip / Get Started button */}
           <TouchableOpacity
             style={IntroStyle.skipButton}
             onPress={handleGetStarted}

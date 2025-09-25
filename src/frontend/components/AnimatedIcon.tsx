@@ -1,16 +1,15 @@
 // AnimatedIcon.tsx
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Colors from '../constants/color';
 import { moderateScale } from '../constants/responsive';
 
 interface AnimatedIconProps {
-  icon: string | React.ReactNode;
-  emoji: string | React.ReactNode;
-  gradient?: string[];
+  icon: string | React.ReactNode; // Main icon content (emoji or string)
+  emoji: string | React.ReactNode; // Smaller floating emoji/glow
+  gradient?: string[]; // Optional gradient colors for background
 }
 
 const AnimatedIcon: React.FC<AnimatedIconProps> = ({
@@ -18,11 +17,13 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
   emoji,
   gradient,
 }) => {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const floatAnim = useRef(new Animated.Value(0)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  // Animation refs
+  const pulseAnim = useRef(new Animated.Value(1)).current; // Scale animation
+  const floatAnim = useRef(new Animated.Value(0)).current; // Vertical float animation
+  const rotateAnim = useRef(new Animated.Value(0)).current; // Background rotation
 
   useEffect(() => {
+    // Pulse animation loop
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -38,6 +39,7 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
       ]),
     ).start();
 
+    // Floating animation loop
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
@@ -53,6 +55,7 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
       ]),
     ).start();
 
+    // Rotate background animation loop
     Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
@@ -64,6 +67,7 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
 
   return (
     <>
+      {/* Rotating background gradient circle */}
       <Animated.View
         style={[
           styles.backgroundCircle,
@@ -81,11 +85,12 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
         ]}
       >
         <LinearGradient
-          colors={gradient || ['#667eea', '#764ba2', '#f093fb']}
+          colors={gradient || [Colors.primary, Colors.secondary, Colors.accent]}
           style={styles.gradientCircle}
         />
       </Animated.View>
 
+      {/* Main icon container with pulse + float animation */}
       <Animated.View
         style={[
           styles.iconContainer,
@@ -93,16 +98,23 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
         ]}
       >
         <View style={styles.iconWrapper}>
-          <BlurView
-            style={styles.iconBlur}
-            blurType="light"
-            blurAmount={10}
-            reducedTransparencyFallbackColor={Colors.white}
+          {/* Main icon */}
+          <View style={[styles.iconCircle, { borderColor: Colors.highlight }]}>
+            <Text style={[styles.mainIcon, { color: Colors.textPrimary }]}>
+              {icon}
+            </Text>
+          </View>
+
+          {/* Small emoji/glow effect */}
+          <View
+            style={[
+              styles.iconGlow,
+              { backgroundColor: Colors.highlight, borderColor: Colors.white },
+            ]}
           >
-            <Text style={styles.mainIcon}>{icon}</Text>
-          </BlurView>
-          <View style={styles.iconGlow}>
-            <Text style={styles.emojiIcon}>{emoji}</Text>
+            <Text style={[styles.emojiIcon, { color: Colors.textPrimary }]}>
+              {emoji}
+            </Text>
           </View>
         </View>
       </Animated.View>
@@ -113,6 +125,7 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
 export default AnimatedIcon;
 
 const styles = StyleSheet.create({
+  // Rotating gradient background circle
   backgroundCircle: {
     position: 'absolute',
     width: moderateScale(220),
@@ -126,7 +139,8 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: moderateScale(110),
   },
-  // Container for main icon + glow effect
+
+  // Container for main icon + glow
   iconContainer: {
     alignItems: 'center',
     marginBottom: moderateScale(20),
@@ -135,29 +149,28 @@ const styles = StyleSheet.create({
   iconWrapper: {
     position: 'relative',
   },
-  // Blur effect behind main icon
-  iconBlur: {
+
+  // Circle behind main icon (used to replace BlurView)
+  iconCircle: {
     width: moderateScale(100),
     height: moderateScale(100),
     borderRadius: moderateScale(50),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
   },
   mainIcon: {
     fontSize: moderateScale(50),
   },
+
   // Glow/emoji effect near main icon
   iconGlow: {
     position: 'absolute',
     top: moderateScale(-6),
     right: moderateScale(-6),
-    backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: moderateScale(16),
     padding: moderateScale(5),
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
   },
   emojiIcon: {
     fontSize: moderateScale(18),

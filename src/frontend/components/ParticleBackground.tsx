@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
   // Each particle (small dot)
   particle: {
     position: 'absolute',
-    width: moderateScale(4),
-    height: moderateScale(4),
+    width: moderateScale(8),
+    height: moderateScale(8),
     backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: moderateScale(8),
   },

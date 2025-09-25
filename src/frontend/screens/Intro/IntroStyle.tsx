@@ -41,6 +41,7 @@ const IntroStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    backgroundColor: 'red',
   },
 
   // Section for icons
@@ -79,14 +80,12 @@ const IntroStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: moderateScale(10),
+    gap: moderateScale(8),
   },
 
   // Single pagination dot
   paginationInner: {
-    height: moderateScale(8),
-    borderRadius: moderateScale(4),
-    backgroundColor: Colors.grayMedium,
+    borderRadius: moderateScale(8),
   },
 
   arrowButton: {
