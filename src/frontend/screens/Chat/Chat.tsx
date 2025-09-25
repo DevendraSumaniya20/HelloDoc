@@ -1,24 +1,23 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   FlatList,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { MainStackParamList, Doctor, Message } from "../../types/types";
-import Colors from "../../constants/color";
-import { useChat } from "../../hooks/useChat";
-import Components from "../../components";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { MainStackParamList, Doctor, Message } from '../../types/types';
+import Colors from '../../constants/color';
+import { useChat } from '../../hooks/useChat';
+import Components from '../../components';
 
-
-type ChatProps = NativeStackScreenProps<MainStackParamList, "Chat">;
+type ChatProps = NativeStackScreenProps<MainStackParamList, 'Chat'>;
 
 const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
-  const { doctor } = route.params;
-  
+  const doctor = route.params?.doctor;
+
   // Error handling for missing doctor data
   if (!doctor) {
     return (
@@ -30,7 +29,8 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   }
 
-  const { messages, inputText, setInputText, sendMessage, isTyping } = useChat(doctor);
+  const { messages, inputText, setInputText, sendMessage, isTyping } =
+    useChat(doctor);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -49,31 +49,31 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
 
   // Handle call functionality (placeholder)
   const handleCall = () => {
-    console.log("Call functionality not implemented");
+    console.log('Call functionality not implemented');
     // TODO: Implement call functionality
   };
 
   // Handle video call functionality (placeholder)
   const handleVideoCall = () => {
-    console.log("Video call functionality not implemented");
+    console.log('Video call functionality not implemented');
     // TODO: Implement video call functionality
   };
 
   // Handle doctor info
   const handleDoctorInfo = () => {
-    console.log("Doctor info functionality not implemented");
+    console.log('Doctor info functionality not implemented');
     // TODO: Navigate to doctor profile or show info modal
   };
 
   // Handle view profile
   const handleViewProfile = () => {
-    console.log("View profile functionality not implemented");
+    console.log('View profile functionality not implemented');
     // TODO: Navigate to doctor profile
   };
 
   // Handle attachment (placeholder)
   const handleAttachment = () => {
-    console.log("Attachment functionality not implemented");
+    console.log('Attachment functionality not implemented');
     // TODO: Implement attachment functionality
   };
 
@@ -84,7 +84,10 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
 
   // Render header component for FlatList
   const renderListHeader = () => (
-    <Components.DoctorInfoCard doctor={doctor} onViewProfile={handleViewProfile} />
+    <Components.DoctorInfoCard
+      doctor={doctor}
+      onViewProfile={handleViewProfile}
+    />
   );
 
   // Render footer component for FlatList (typing indicator)
@@ -101,16 +104,16 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
         onVideoCall={handleVideoCall}
         onInfo={handleDoctorInfo}
       />
-      
+
       <KeyboardAvoidingView
         style={styles.chatContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           contentContainerStyle={styles.messagesContainer}
           showsVerticalScrollIndicator={false}
           renderItem={renderMessage}
@@ -127,7 +130,7 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
             }
           }}
         />
-        
+
         <Components.MessageInput
           value={inputText}
           onChangeText={setInputText}

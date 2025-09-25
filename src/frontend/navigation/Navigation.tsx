@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -12,7 +12,6 @@ import {
   AuthStackParamList,
   MainStackParamList,
 } from '../types/types';
-import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
 import TabNavigation from './TabNavigation';
 
@@ -22,13 +21,21 @@ const MainStackNav = createNativeStackNavigator<MainStackParamList>();
 
 const defaultScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
+  animation: 'slide_from_right',
 };
+
 const authScreenOptions: NativeStackNavigationOptions = {
   headerShown: false,
   gestureEnabled: false,
+  animation: 'slide_from_right',
 };
-const mainScreenOptions: NativeStackNavigationOptions = { headerShown: false };
 
+const mainScreenOptions: NativeStackNavigationOptions = {
+  headerShown: false,
+  animation: 'slide_from_right',
+};
+
+// --- Auth Stack ---
 const AuthStack: React.FC = () => (
   <AuthStackNav.Navigator
     initialRouteName={navigationStrings.Login}
@@ -45,6 +52,7 @@ const AuthStack: React.FC = () => (
   </AuthStackNav.Navigator>
 );
 
+// --- Main Stack ---
 const MainStack: React.FC = () => (
   <MainStackNav.Navigator screenOptions={mainScreenOptions}>
     <MainStackNav.Screen name="Tabs" component={TabNavigation} />
@@ -52,53 +60,52 @@ const MainStack: React.FC = () => (
       name={navigationStrings.Profile}
       component={screens.Profile}
     />
+    <MainStackNav.Screen
+      name={navigationStrings.Setting}
+      component={screens.Setting}
+    />
   </MainStackNav.Navigator>
 );
 
+// --- Root Navigation ---
 const Navigation: React.FC = () => {
-  const { isAuthenticated, initializing } = useAuth();
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    if (!initializing) {
-      timeoutId = setTimeout(() => setShowSplash(false), 1500);
-    }
-
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [initializing]);
-
-  if (initializing) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.info} />
-      </View>
-    );
-  }
-
   return (
     <NavigationContainer>
       <Suspense
         fallback={
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.info} />
+            <ActivityIndicator size="large" color={Colors.primary} />
           </View>
         }
       >
         <RootStack.Navigator screenOptions={defaultScreenOptions}>
-          {showSplash ? (
-            <RootStack.Screen
-              name={navigationStrings.Splash}
-              component={screens.Splash}
-            />
-          ) : !isAuthenticated ? (
-            <RootStack.Screen name="AuthStack" component={AuthStack} />
-          ) : (
-            <RootStack.Screen name="MainStack" component={MainStack} />
-          )}
+          {/* Splash screen is always first */}
+          <RootStack.Screen
+            name={navigationStrings.Splash}
+            component={screens.Splash}
+            options={{ animation: 'fade' }}
+          />
+
+          {/* Intro screen (Splash decides if it should navigate here) */}
+          <RootStack.Screen
+            name={navigationStrings.Intro}
+            component={screens.Intro}
+            options={{ animation: 'fade' }}
+          />
+
+          {/* Auth flow */}
+          <RootStack.Screen
+            name="AuthStack"
+            component={AuthStack}
+            options={{ animation: 'slide_from_bottom' }}
+          />
+
+          {/* Main flow */}
+          <RootStack.Screen
+            name="MainStack"
+            component={MainStack}
+            options={{ animation: 'slide_from_right' }}
+          />
         </RootStack.Navigator>
       </Suspense>
     </NavigationContainer>

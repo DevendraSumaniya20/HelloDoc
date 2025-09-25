@@ -32,6 +32,7 @@ export type MainStackParamList = {
 export type RootStackParamList = {
   AuthStack: undefined;
   MainStack: undefined;
+  Intro: undefined;
   Login: undefined;
   Register: undefined;
   Splash: undefined;
@@ -56,6 +57,15 @@ export type SplashScreenProps = NativeStackScreenProps<
 export type SplashNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Splash'
+>;
+
+export type IntroScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'Intro'
+>;
+export type IntroNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Intro'
 >;
 
 export type HomeScreenProps = NativeStackScreenProps<

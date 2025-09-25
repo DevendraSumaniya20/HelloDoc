@@ -1,3 +1,4 @@
+import AnimatedIcon from './AnimatedIcon';
 import AuthHeader from './AuthHeader';
 import CategoryCard from './CategoryCard';
 import ChatHeader from './ChatHeader';
@@ -13,6 +14,8 @@ import MessageInput from './MessageInput';
 import PrimaryButton from './PrimaryButton';
 import SocialButton from './SocialButton';
 import TypingIndicator from './TypingIndicator';
+import ParticleBackground from './ParticleBackground';
+import SlideContent from './SlideContent';
 
 const Components = {
   AuthHeader,
@@ -30,6 +33,9 @@ const Components = {
   MessageBubble,
   MessageInput,
   TypingIndicator,
+  AnimatedIcon,
+  ParticleBackground,
+  SlideContent,
 };
 
 export default Components;

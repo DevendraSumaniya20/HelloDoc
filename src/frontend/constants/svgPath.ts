@@ -15,7 +15,19 @@ import Dots from '../assets/svg/dots.svg';
 import MicroPhone from '../assets/svg/microphone.svg';
 import Sticker from '../assets/svg/sticker.svg';
 import Video from '../assets/svg/video.svg';
-
+import Bell from '../assets/svg/bell.svg';
+import Bolt from '../assets/svg/bolt.svg';
+import BullsEye from '../assets/svg/bullseye-arrow.svg';
+import ChartBar from '../assets/svg/chart-bar.svg';
+import ChartLine from '../assets/svg/chart-line.svg';
+import ClipboardText from '../assets/svg/clipboard-text.svg';
+import Clock from '../assets/svg/clock.svg';
+import Doctor from '../assets/svg/doctor.svg';
+import Hospital from '../assets/svg/hospital.svg';
+import MobileAlt from '../assets/svg/mobile-alt.svg';
+import RobotAI from '../assets/svg/robot.svg';
+import Rocket from '../assets/svg/rocket.svg';
+import Trophy from '../assets/svg/trophy.svg';
 
 const Icons = {
   Cross,
@@ -28,11 +40,26 @@ const Icons = {
   Profile,
   Setting,
   Search,
-  Call,Camera, Clip,
+  Call,
+  Camera,
+  Clip,
   Dots,
   MicroPhone,
   Sticker,
-  Video
+  Video,
+  Bell,
+  Bolt,
+  BullsEye,
+  ChartBar,
+  ChartLine,
+  ClipboardText,
+  Clock,
+  Doctor,
+  Hospital,
+  MobileAlt,
+  RobotAI,
+  Rocket,
+  Trophy,
 };
 
 export default Icons;

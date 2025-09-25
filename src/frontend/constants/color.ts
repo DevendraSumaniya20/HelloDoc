@@ -1,44 +1,44 @@
 const Colors = {
   // Basic & Utility Colors
-  black: '#0E0E2C', 
+  black: '#1A1D29',
   white: '#FFFFFF',
 
   // Grayscale - For backgrounds, borders, text
-  grayUltraLight: '#F8F9FB', // Very light background
-  grayLight: '#E9EEF3',      // Subtle borders or dividers
-  grayMedium: '#A9B3C7',     // Placeholder text, icons
-  grayDark: '#5E6778',       // Secondary text, soft shadows
+  grayUltraLight: '#FAFBFC', // Very light background
+  grayLight: '#F1F3F6', // Subtle borders or dividers
+  grayMedium: '#8B95A8', // Placeholder text, icons
+  grayDark: '#4A5568', // Secondary text, soft shadows
 
-  // Primary AI Theme - Professional & Trustworthy
-  primary: '#6DD5FA',         // Main blue for buttons, highlights
-  primaryLight: '#A3E1FF',    // Lighter shade for hover or backgrounds
-  primaryDark: '#3EB4E0',     // Darker shade for emphasis
+  // Primary Medical Blue Theme - Professional & Trustworthy
+  primary: '#2B6CB0', // Deep medical blue for buttons, highlights
+  primaryLight: '#4299E1', // Lighter shade for hover or backgrounds
+  primaryDark: '#1A365D', // Darker shade for emphasis
 
-  secondary: '#73C8A9',       // Calm mint-green for success or accents
-  secondaryLight: '#A3E0C3',  // Lighter green
-  secondaryDark: '#4AA686',   // Darker green for emphasis
+  secondary: '#0891B2', // Medical teal for success or accents
+  secondaryLight: '#06B6D4', // Lighter teal
+  secondaryDark: '#0E7490', // Darker teal for emphasis
 
-  accent: '#F1A58F',          // Soft coral for highlights or CTAs
-  accentLight: '#F5C7A5',     // Lighter accent shade
-  accentDark: '#E88C71',      // Darker accent for buttons or hover
+  accent: '#0EA5E9', // Sky blue for highlights or CTAs
+  accentLight: '#38BDF8', // Lighter accent shade
+  accentDark: '#0284C7', // Darker accent for buttons or hover
 
-  neutral: '#F0F4F8',         // Primary background color for app
+  neutral: '#F7FAFC', // Primary background color for app
 
   // Text Colors
-  textPrimary: '#172A3A',     // Very dark navy for main readable text
-  textSecondary: '#5E6778',   // Softer medium-dark gray for descriptions
-  textPlaceholder: '#A9B3C7', // Light gray for form placeholders
+  textPrimary: '#1A202C', // Very dark for main readable text
+  textSecondary: '#4A5568', // Softer medium-dark gray for descriptions
+  textPlaceholder: '#A0AEC0', // Light gray for form placeholders
 
   // Status Colors
-  success: '#27AE60',         // Vibrant green
-  warning: '#F39C12',         // Strong orange
-  error: '#C0392B',           // Clinical red
-  info: '#2980B9',            // Solid blue for info messages
+  success: '#059669', // Medical green
+  warning: '#EA580C', // Medical orange
+  error: '#DC2626', // Medical red
+  info: '#3182CE', // Medical blue for info messages
 
   // UI Elements
   cardBackground: '#FFFFFF',
-  link: '#3498DB',            // Standard hyperlink blue
-  highlight: '#FDD835',       // Subtle golden highlight
+  link: '#3182CE', // Medical blue hyperlink
+  highlight: '#BEE3F8', // Subtle blue highlight
 };
 
 export default Colors;

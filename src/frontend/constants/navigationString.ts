@@ -1,6 +1,7 @@
 // navigationStrings.ts
 const navigationStrings = {
   Splash: 'Splash',
+  Intro: 'Intro',
   Login: 'Login',
   Register: 'Register',
   Home: 'Home',
