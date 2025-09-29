@@ -6,7 +6,10 @@ import { generateMessageId } from '../utils/chatHelpers';
 import { sendChatMessage, testConnection } from '../apollo/client';
 import { useAuth } from './AuthContext';
 
-export function useChat(doctor: Doctor) {
+export function useChat(
+  doctor: Doctor,
+  onDoctorStatusChange?: (status: 'online' | 'offline' | 'busy') => void,
+) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -63,127 +66,124 @@ export function useChat(doctor: Doctor) {
     loadChatHistory();
   }, [doctor?.id, user?.uid]);
 
-  const sendMessage = useCallback(async () => {
-    console.log('sendMessage called with:', inputText);
+  const sendMessage = useCallback(
+    async (
+      onDoctorStatusChange?: (status: 'online' | 'offline' | 'busy') => void,
+    ) => {
+      console.log('sendMessage called with:', inputText);
 
-    if (!inputText.trim()) {
-      console.log('Empty input, not sending');
-      return;
-    }
+      if (!inputText.trim()) {
+        console.log('Empty input, not sending');
+        return;
+      }
 
-    if (!doctor?.id || !user?.uid) {
-      console.error('No doctor ID or user ID available');
-      return;
-    }
+      if (!doctor?.id || !user?.uid) {
+        console.error('No doctor ID or user ID available');
+        return;
+      }
 
-    // Create user message
-    const userMessage: Message = {
-      id: generateMessageId(),
-      text: inputText.trim(),
-      sender: 'user',
-      timestamp: new Date(),
-      type: 'text',
-      isLoading: false,
-      error: false,
-    };
+      // Create user message
+      const userMessage: Message = {
+        id: generateMessageId(),
+        text: inputText.trim(),
+        sender: 'user',
+        timestamp: new Date(),
+        type: 'text',
+        isLoading: false,
+        error: false,
+      };
 
-    console.log('Created user message:', userMessage);
+      console.log('Created user message:', userMessage);
 
-    // Add user message to local state
-    setMessages(prev => [...prev, userMessage]);
+      // Add user message to local state
+      setMessages(prev => [...prev, userMessage]);
 
-    // Clear input and show typing indicator
-    const currentInput = inputText;
-    setInputText('');
-    setIsTyping(true);
+      // Clear input and show typing indicator
+      const currentInput = inputText;
+      setInputText('');
+      setIsTyping(true);
 
-    try {
-      // Save user message to Firebase
-      await chatService.addMessageAndSave(user.uid, doctor.id, userMessage);
-      console.log('✅ User message saved to Firebase');
+      // ✅ Set doctor online while responding
+      if (onDoctorStatusChange) onDoctorStatusChange('online');
 
-      // Try GraphQL first if we think we're connected
-      if (isConnected !== false) {
-        console.log('Attempting GraphQL request...');
+      try {
+        // Save user message to Firebase
+        await chatService.addMessageAndSave(user.uid, doctor.id, userMessage);
+        console.log('✅ User message saved to Firebase');
 
-        const result = await sendChatMessage(currentInput);
+        // Try GraphQL first if connected
+        if (isConnected !== false) {
+          console.log('Attempting GraphQL request...');
+          const result = await sendChatMessage(currentInput);
 
-        if (result.success && result.data) {
-          console.log('GraphQL request successful');
+          if (result.success && result.data) {
+            console.log('GraphQL request successful');
 
-          const assistantMessage: Message = {
+            const assistantMessage: Message = {
+              id: generateMessageId(),
+              text: result.data.content || 'No response received',
+              sender: 'doctor',
+              timestamp: new Date(),
+              type: 'text',
+              isLoading: false,
+              error: false,
+            };
+
+            console.log(
+              'Created assistant message from GraphQL:',
+              assistantMessage,
+            );
+            setMessages(prev => [...prev, assistantMessage]);
+
+            // Save to Firebase
+            await chatService.addMessageAndSave(
+              user.uid,
+              doctor.id,
+              assistantMessage,
+            );
+
+            if (isConnected === null) setIsConnected(true);
+          } else {
+            console.log(
+              'GraphQL request failed, falling back to local service:',
+              result.error,
+            );
+            setIsConnected(false);
+            await useLocalChatService(currentInput, doctor);
+          }
+        } else {
+          console.log('Using local ChatService (no connection)');
+          await useLocalChatService(currentInput, doctor);
+        }
+      } catch (err) {
+        console.error('Error in sendMessage:', err);
+        setIsConnected(false);
+
+        try {
+          await useLocalChatService(currentInput, doctor);
+        } catch (localError) {
+          console.error('Local service also failed:', localError);
+          const errorMessage: Message = {
             id: generateMessageId(),
-            text: result.data.content || 'No response received',
+            text: "Sorry, I'm having trouble responding right now. Please try again in a moment.",
             sender: 'doctor',
             timestamp: new Date(),
             type: 'text',
             isLoading: false,
-            error: false,
+            error: true,
           };
-
-          console.log(
-            'Created assistant message from GraphQL:',
-            assistantMessage,
-          );
-          setMessages(prev => [...prev, assistantMessage]);
-
-          // Save to Firebase
-          await chatService.addMessageAndSave(
-            user.uid,
-            doctor.id,
-            assistantMessage,
-          );
-
-          // Update connection status
-          if (isConnected === null) {
-            setIsConnected(true);
-          }
-        } else {
-          console.log(
-            'GraphQL request failed, falling back to local service:',
-            result.error,
-          );
-
-          // Update connection status
-          setIsConnected(false);
-
-          // Use local ChatService as fallback
-          await useLocalChatService(currentInput, doctor);
+          setMessages(prev => [...prev, errorMessage]);
+          chatService.addMessage(doctor.id, errorMessage);
         }
-      } else {
-        console.log('Using local ChatService (no connection)');
-        await useLocalChatService(currentInput, doctor);
+      } finally {
+        setIsTyping(false);
+
+        // ✅ Set doctor offline / last seen after response
+        if (onDoctorStatusChange) onDoctorStatusChange('offline');
       }
-    } catch (err) {
-      console.error('Error in sendMessage:', err);
-
-      // Update connection status
-      setIsConnected(false);
-
-      // Try local service as last resort
-      try {
-        await useLocalChatService(currentInput, doctor);
-      } catch (localError) {
-        console.error('Local service also failed:', localError);
-
-        // Add error message as final fallback
-        const errorMessage: Message = {
-          id: generateMessageId(),
-          text: "Sorry, I'm having trouble responding right now. Please try again in a moment.",
-          sender: 'doctor',
-          timestamp: new Date(),
-          type: 'text',
-          isLoading: false,
-          error: true,
-        };
-
-        setMessages(prev => [...prev, errorMessage]);
-        chatService.addMessage(doctor.id, errorMessage);
-      }
-    } finally {
-      setIsTyping(false);
-    }
-  }, [inputText, doctor, user?.uid, isConnected]);
+    },
+    [inputText, doctor, user?.uid, isConnected],
+  );
 
   // Helper function for local chat service
   const useLocalChatService = async (input: string, doctor: Doctor) => {

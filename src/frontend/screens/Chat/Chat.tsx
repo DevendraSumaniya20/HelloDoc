@@ -1,5 +1,5 @@
 // src/screens/Chat/Chat.tsx
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -22,7 +22,6 @@ type ChatProps = NativeStackScreenProps<MainStackParamList, 'Chat'>;
 const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   const doctor = route.params?.doctor;
 
-  // Error handling for missing doctor data
   if (!doctor) {
     return (
       <Components.ErrorScreen
@@ -33,6 +32,41 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   }
 
+  // ✅ 1. Keep doctor in local state for dynamic updates
+  const [currentDoctor, setCurrentDoctor] = useState<Doctor>(
+    route.params.doctor,
+  );
+
+  useEffect(() => {
+    if (route.params?.doctor) {
+      setCurrentDoctor(route?.params?.doctor);
+    }
+  }, [route.params?.doctor]);
+
+  // Example: auto-update doctor status every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      // TODO: replace with actual API call to get latest status
+      // const res = await fetchDoctorStatus(doctor.id);
+      // setCurrentDoctor(prev => ({ ...prev, status: res.status, lastSeen: res.lastSeen }));
+
+      // For demo purposes, simulate offline/online toggle
+
+      setCurrentDoctor(prev => {
+        if (prev.status === 'online') {
+          return {
+            ...prev,
+            status: 'offline',
+            lastSeen: new Date().toISOString(),
+          };
+        }
+        return { ...prev, status: 'online' };
+      });
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [doctor.id]);
+
   const {
     messages,
     inputText,
@@ -40,77 +74,53 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     sendMessage,
     isTyping,
     isLoading,
-  } = useChat(doctor);
+  } = useChat(currentDoctor);
+
   const flatListRef = useRef<FlatList>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (messages.length > 0 && !isLoading) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      setTimeout(
+        () => flatListRef.current?.scrollToEnd({ animated: true }),
+        100,
+      );
     }
   }, [messages, isLoading]);
 
-  // Handle back navigation
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
-
-  // Handle call functionality (placeholder)
-  const handleCall = () => {
-    console.log('Call functionality not implemented');
-    // TODO: Implement call functionality
-  };
-
-  // Handle video call functionality (placeholder)
-  const handleVideoCall = () => {
+  // Navigation & action handlers
+  const handleGoBack = () => navigation.goBack();
+  const handleCall = () => console.log('Call functionality not implemented');
+  const handleVideoCall = () =>
     console.log('Video call functionality not implemented');
-    // TODO: Implement video call functionality
-  };
-
-  // Handle doctor info
-  const handleDoctorInfo = () => {
+  const handleDoctorInfo = () =>
     console.log('Doctor info functionality not implemented');
-    // TODO: Navigate to doctor profile or show info modal
-  };
-
-  // Handle view profile
-  const handleViewProfile = () => {
+  const handleViewProfile = () =>
     console.log('View profile functionality not implemented');
-    // TODO: Navigate to doctor profile
-  };
-
-  // Handle attachment (placeholder)
-  const handleAttachment = () => {
+  const handleAttachment = () =>
     console.log('Attachment functionality not implemented');
-    // TODO: Implement attachment functionality
-  };
 
-  // Render message item
+  // Render functions
   const renderMessage = ({ item }: { item: Message }) => (
-    <Components.MessageBubble message={item} doctor={doctor} />
+    <Components.MessageBubble message={item} doctor={currentDoctor} />
   );
 
-  // Render header component for FlatList
   const renderListHeader = () => (
     <Components.DoctorInfoCard
-      doctor={doctor}
+      doctor={currentDoctor}
       onViewProfile={handleViewProfile}
     />
   );
 
-  // Render footer component for FlatList (typing indicator)
   const renderListFooter = () => (
-    <Components.TypingIndicator doctor={doctor} isVisible={isTyping} />
+    <Components.TypingIndicator doctor={currentDoctor} isVisible={isTyping} />
   );
 
-  // Render loading state while fetching chat history
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <Components.ChatHeader
-          doctor={doctor}
+          doctor={currentDoctor}
           onBack={handleGoBack}
           onCall={handleCall}
           onVideoCall={handleVideoCall}
@@ -127,7 +137,7 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Components.ChatHeader
-        doctor={doctor}
+        doctor={currentDoctor}
         onBack={handleGoBack}
         onCall={handleCall}
         onVideoCall={handleVideoCall}
@@ -148,12 +158,10 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
           renderItem={renderMessage}
           ListHeaderComponent={renderListHeader}
           ListFooterComponent={renderListFooter}
-          onContentSizeChange={() => {
-            // Auto-scroll when content size changes
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
           onLayout={() => {
-            // Auto-scroll when layout changes
             if (messages.length > 0) {
               flatListRef.current?.scrollToEnd({ animated: false });
             }
@@ -163,9 +171,20 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
         <Components.MessageInput
           value={inputText}
           onChangeText={setInputText}
-          onSend={sendMessage}
+          onSend={() =>
+            sendMessage(status =>
+              setCurrentDoctor(prev => ({
+                ...prev,
+                status,
+                lastSeen:
+                  status === 'offline'
+                    ? new Date().toISOString()
+                    : prev.lastSeen,
+              })),
+            )
+          }
           onAttachment={handleAttachment}
-          placeholder={`Message Dr. ${doctor.name}...`}
+          placeholder={`Message Dr. ${currentDoctor.name}...`}
           maxLength={1000}
         />
       </KeyboardAvoidingView>

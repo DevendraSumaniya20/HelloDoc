@@ -19,7 +19,6 @@ import Components from '../../components';
 import Icons from '../../constants/svgPath';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import navigationStrings from '../../constants/navigationString';
-import { ImageSourcePropType } from 'react-native';
 
 const Home: React.FC = () => {
   const { user, checkUserExists, isAuthenticated } = useAuth();
