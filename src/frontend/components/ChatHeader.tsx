@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { Doctor } from '../types/types';
 import Colors from '../constants/color';
@@ -18,7 +20,9 @@ interface ChatHeaderProps {
   onBack: () => void;
   onCall?: () => void;
   onVideoCall?: () => void;
-  onInfo?: () => void;
+  onProfilePress?: () => void;
+  onSearch?: () => void;
+  onClearChat?: () => void;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -26,30 +30,32 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onBack,
   onCall,
   onVideoCall,
-  onInfo,
+  onProfilePress,
+  onSearch,
+  onClearChat,
 }) => {
-  // 1️⃣ State to trigger re-render every minute
-  const [tick, setTick] = useState(0);
+  const [menuVisible, setMenuVisible] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => setTick(t => t + 1), 60000); // 60 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  // 2️⃣ Compute status text
   const getStatusText = () => {
     if (doctor.status === 'online') return 'Online';
     if (doctor.status === 'busy') return 'Busy';
     return doctor.lastSeen ? timeAgo(doctor.lastSeen) : 'Last seen recently';
   };
 
-  // 3️⃣ Status dot color
   const statusDotStyle =
     doctor.status === 'online'
       ? styles.onlineStatus
       : doctor.status === 'busy'
       ? styles.busyStatus
       : styles.offlineStatus;
+
+  const toggleMenu = () => setMenuVisible(prev => !prev);
+
+  const handleOption = (option: 'search' | 'clear') => {
+    setMenuVisible(false);
+    if (option === 'search' && onSearch) onSearch();
+    if (option === 'clear' && onClearChat) onClearChat();
+  };
 
   return (
     <>
@@ -62,7 +68,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           />
         </TouchableOpacity>
 
-        <View style={styles.doctorInfo}>
+        <TouchableOpacity
+          style={styles.doctorInfo}
+          onPress={onProfilePress}
+          activeOpacity={0.7}
+        >
           <Image source={{ uri: doctor.image }} style={styles.headerAvatar} />
           <View style={styles.doctorDetails}>
             <Text style={styles.doctorName}>{doctor.name}</Text>
@@ -71,7 +81,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
               <Text style={styles.statusText}>{getStatusText()}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.headerActions}>
           {onCall && (
@@ -90,16 +100,34 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
               />
             </TouchableOpacity>
           )}
-          {onInfo && (
-            <TouchableOpacity style={styles.actionButton} onPress={onInfo}>
-              <Icons.Dots
-                height={moderateScale(16)}
-                width={moderateScale(16)}
-              />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.actionButton} onPress={toggleMenu}>
+            <Icons.Dots height={moderateScale(16)} width={moderateScale(16)} />
+          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Dropdown menu */}
+      {menuVisible && (
+        <Pressable
+          style={styles.menuOverlay}
+          onPress={() => setMenuVisible(false)}
+        >
+          <View style={styles.menu}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleOption('search')}
+            >
+              <Text style={styles.menuText}>Search</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleOption('clear')}
+            >
+              <Text style={styles.menuText}>Clear Chat</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      )}
     </>
   );
 };
@@ -117,15 +145,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
   },
-  backIcon: {
-    padding: moderateScale(8),
-    marginRight: moderateScale(8),
-  },
-  doctorInfo: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  backIcon: { padding: moderateScale(8), marginRight: moderateScale(8) },
+  doctorInfo: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   headerAvatar: {
     width: moderateScale(40),
     height: moderateScale(40),
@@ -134,46 +155,52 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.black,
   },
-  doctorDetails: {
-    flex: 1,
-  },
+  doctorDetails: { flex: 1 },
   doctorName: {
     fontSize: scale(12),
     fontWeight: '600',
     color: Colors.black,
     marginBottom: moderateScale(2),
   },
-  doctorStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  doctorStatus: { flexDirection: 'row', alignItems: 'center' },
   statusDot: {
     width: moderateScale(8),
     height: moderateScale(8),
     borderRadius: moderateScale(4),
     marginRight: moderateScale(6),
   },
-  onlineStatus: {
-    backgroundColor: '#10B981',
+  onlineStatus: { backgroundColor: '#10B981' },
+  busyStatus: { backgroundColor: '#F59E0B' },
+  offlineStatus: { backgroundColor: '#6B7280' },
+  statusText: { fontSize: scale(10), color: Colors.black },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
+  actionButton: { padding: moderateScale(8), marginLeft: moderateScale(4) },
+  menuOverlay: {
+    position: 'absolute',
+    top: moderateScale(60),
+    right: moderateScale(16),
+    left: 0,
+    bottom: 0,
+    zIndex: 100,
   },
-  busyStatus: {
-    backgroundColor: '#F59E0B',
+  menu: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: Colors.white,
+    borderRadius: 6,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    width: moderateScale(140),
   },
-  offlineStatus: {
-    backgroundColor: '#6B7280',
+  menuItem: {
+    padding: moderateScale(12),
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.grayLight,
   },
-  statusText: {
-    fontSize: scale(10),
-    color: Colors.black,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionButton: {
-    padding: moderateScale(8),
-    marginLeft: moderateScale(4),
-  },
+  menuText: { fontSize: scale(14), color: Colors.black },
 });
 
 export default ChatHeader;

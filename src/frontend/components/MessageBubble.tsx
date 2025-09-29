@@ -2,18 +2,48 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Doctor, Message } from '../types/types';
 import Colors from '../constants/color';
-import { moderateScale } from '../constants/responsive';
+import { moderateScale, scale } from '../constants/responsive';
 
 interface MessageBubbleProps {
   message: Message;
   doctor?: Doctor;
+  searchQuery?: string; // text to highlight
+  isActiveMatch?: boolean; // ✅ is current match
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, doctor }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({
+  message,
+  doctor,
+  searchQuery,
+  isActiveMatch = false,
+}) => {
   const isUserMessage = message.sender === 'user';
 
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getHighlightedText = (text: string, highlight?: string) => {
+    if (!highlight) return <Text>{text}</Text>;
+
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <Text
+          key={index}
+          style={[
+            isActiveMatch ? styles.activeHighlight : styles.highlight,
+            { borderRadius: 4, paddingHorizontal: 2 }, // added for visibility
+          ]}
+        >
+          {part}
+        </Text>
+      ) : (
+        <Text key={index}>{part}</Text>
+      ),
+    );
   };
 
   return (
@@ -41,7 +71,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, doctor }) => {
             isUserMessage ? styles.userMessageText : styles.doctorMessageText,
           ]}
         >
-          {message.text}
+          {getHighlightedText(message.text, searchQuery)}
         </Text>
         <Text
           style={[
@@ -64,7 +94,7 @@ const styles = StyleSheet.create({
   },
   userMessageContainer: {
     justifyContent: 'flex-end',
-      alignSelf: 'flex-end', 
+    alignSelf: 'flex-end',
   },
   doctorMessageContainer: {
     justifyContent: 'flex-start',
@@ -96,8 +126,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: moderateScale(4),
   },
   messageText: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: scale(14),
+    lineHeight: moderateScale(20),
     marginBottom: moderateScale(4),
   },
   userMessageText: {
@@ -115,6 +145,14 @@ const styles = StyleSheet.create({
   },
   doctorMessageTime: {
     color: Colors.grayDark,
+  },
+  highlight: {
+    backgroundColor: '#FFF176', // bright yellow
+    color: '#000', // ensures text is readable
+  },
+  activeHighlight: {
+    backgroundColor: '#FFA726', // orange for active match
+    color: '#000',
   },
 });
 
