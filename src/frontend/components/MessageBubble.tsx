@@ -137,7 +137,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   ).current;
 
   return (
-    <View style={styles.messageWrapper}>
+    <View style={{}}>
       {/* Animated Delete Indicator (trash icon slides in while swiping) */}
       <Animated.View
         style={[
@@ -208,6 +208,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
               isUserMessage
                 ? styles.userMessageBubble
                 : styles.doctorMessageBubble,
+              ,
             ]}
           >
             {/* Message text with search highlight */}
@@ -262,89 +263,91 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
 // -------------------- Styles --------------------
 const styles = StyleSheet.create({
-  messageWrapper: {
-    position: 'relative', // For positioning delete icon absolutely
-    marginBottom: moderateScale(16),
-  },
   messageContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row', // Arrange checkbox/avatar/message horizontally
     marginBottom: moderateScale(16),
-    paddingHorizontal: moderateScale(16),
+    paddingHorizontal: moderateScale(16), // Horizontal padding inside container
+    alignItems: 'flex-end', // Align items vertically at the bottom
+    maxWidth: '80%', // Limit max width of message container
   },
+  messageBubble: {
+    paddingHorizontal: moderateScale(16), // Bubble horizontal padding
+    paddingVertical: moderateScale(12), // Bubble vertical padding
+    borderRadius: moderateScale(18), // Rounded corners
+    elevation: 1, // Android shadow
+    shadowColor: '#000', // iOS shadow color
+    shadowOpacity: 0.05, // iOS shadow opacity
+    shadowRadius: 2, // iOS shadow radius
+    shadowOffset: { width: 0, height: 1 }, // iOS shadow offset
+    width: 'auto', // Max width of bubble
+  },
+  messageText: {
+    fontSize: scale(14), // Font size of the message text
+    lineHeight: moderateScale(20), // Line height for readability
+    marginBottom: moderateScale(4), // Space below text for timestamp/actions
+    flexWrap: 'wrap', // Allow text to wrap within bubble
+  },
+
   userMessageContainer: {
-    justifyContent: 'flex-end', // Align user messages to right
-    alignSelf: 'flex-end',
+    justifyContent: 'flex-end', // Push user message to the right
+    alignSelf: 'flex-end', // Align container to right
   },
   doctorMessageContainer: {
-    justifyContent: 'flex-start', // Align doctor messages to left
+    justifyContent: 'flex-start', // Push doctor message to the left
   },
   selectedMessage: {
-    backgroundColor: 'rgba(0, 122, 255, 0.1)', // Highlight selected message
+    backgroundColor: 'rgba(0, 122, 255, 0.1)', // Highlight for selected messages
     borderRadius: moderateScale(8),
   },
   messageAvatar: {
-    width: moderateScale(32),
-    height: moderateScale(32),
-    borderRadius: moderateScale(16),
-    marginRight: moderateScale(8),
-    marginTop: moderateScale(4),
+    width: moderateScale(32), // Avatar width
+    height: moderateScale(32), // Avatar height
+    borderRadius: moderateScale(16), // Circle avatar
+    marginRight: moderateScale(8), // Space between avatar and bubble
+    marginTop: moderateScale(4), // Align with message text vertically
   },
-  messageBubble: {
-    maxWidth: '75%',
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(12),
-    borderRadius: moderateScale(18),
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-  },
+
   userMessageBubble: {
-    backgroundColor: Colors.primary,
-    borderBottomRightRadius: moderateScale(4),
+    backgroundColor: Colors.primary, // User message bubble color
+    borderBottomRightRadius: moderateScale(4), // Slight corner modification for style
   },
   doctorMessageBubble: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.white, // Doctor message bubble color
     borderBottomLeftRadius: moderateScale(4),
   },
-  messageText: {
-    fontSize: scale(14),
-    lineHeight: moderateScale(20),
-    marginBottom: moderateScale(4),
-  },
+
   userMessageText: {
-    color: Colors.white,
+    color: Colors.white, // Text color inside user bubble
   },
   doctorMessageText: {
-    color: Colors.black,
+    color: Colors.black, // Text color inside doctor bubble
   },
   messageTime: {
-    fontSize: 11,
-    alignSelf: 'flex-end',
+    fontSize: 11, // Timestamp font size
+    alignSelf: 'flex-end', // Align timestamp to bottom right of bubble
   },
   userMessageTime: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.7)', // Faded white timestamp for user
   },
   doctorMessageTime: {
-    color: Colors.grayDark,
+    color: Colors.grayDark, // Timestamp color for doctor messages
   },
   highlight: {
     backgroundColor: '#FFF176', // Highlight search matches
     color: '#000',
   },
   activeHighlight: {
-    backgroundColor: '#FFA726', // Highlight currently active search match
+    backgroundColor: '#FFA726', // Highlight for active search match
     color: '#000',
   },
   actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: moderateScale(4),
+    flexDirection: 'row', // Arrange Edit/Delete horizontally
+    justifyContent: 'flex-end', // Align actions to right
+    marginTop: moderateScale(4), // Space above actions
   },
   editText: {
     color: Colors.info, // Edit button color
-    marginRight: moderateScale(12),
+    marginRight: moderateScale(12), // Space between Edit and Delete
     fontWeight: '500',
   },
   deleteActionText: {
@@ -356,35 +359,35 @@ const styles = StyleSheet.create({
     right: moderateScale(16),
     top: 0,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: moderateScale(80),
+    justifyContent: 'center', // Center icon vertically
+    alignItems: 'center', // Center icon horizontally
+    width: moderateScale(80), // Space allocated for swipe icon
   },
   deleteText: {
-    color: '#FF0000',
-    fontSize: 20,
+    color: '#FF0000', // Trash icon color
+    fontSize: 20, // Icon size
     fontWeight: '600',
   },
   checkboxContainer: {
-    justifyContent: 'center', // Container for selection checkbox
-    marginRight: moderateScale(8),
+    justifyContent: 'center', // Align checkbox vertically
+    marginRight: moderateScale(8), // Space between checkbox and bubble
   },
   checkbox: {
-    width: moderateScale(24),
+    width: moderateScale(24), // Checkbox size
     height: moderateScale(24),
-    borderRadius: moderateScale(12),
+    borderRadius: moderateScale(12), // Make circular
     borderWidth: 2,
-    borderColor: Colors.primary,
-    justifyContent: 'center',
+    borderColor: Colors.primary, // Border color
+    justifyContent: 'center', // Center checkmark
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.white, // Default background
   },
   checkboxSelected: {
-    backgroundColor: Colors.primary, // Checked state color
+    backgroundColor: Colors.primary, // Checked background
     borderColor: Colors.primary,
   },
   checkmark: {
-    color: Colors.white,
+    color: Colors.white, // Checkmark color
     fontSize: 16,
     fontWeight: 'bold',
   },
