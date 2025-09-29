@@ -34,7 +34,7 @@ export class ChatService {
     };
   }
 
-  // Load chat history from Firebase
+  // Load chat history
   async loadChatHistory(
     userId: string,
     doctorId: string,
@@ -48,7 +48,6 @@ export class ChatService {
         .get();
 
       if (snapshot.empty && doctor) {
-        // No history, return greeting message
         const greeting = this.generateGreeting(doctor);
         this.chatHistory.set(doctorId, [greeting]);
         return [greeting];
@@ -68,13 +67,11 @@ export class ChatService {
         });
       });
 
-      // Cache in memory
       this.chatHistory.set(doctorId, messages);
       console.log(`✅ Loaded ${messages.length} messages from Firebase`);
       return messages;
     } catch (error) {
       console.error('❌ Error loading chat history:', error);
-      // Return greeting on error
       if (doctor) {
         const greeting = this.generateGreeting(doctor);
         return [greeting];
@@ -101,7 +98,6 @@ export class ChatService {
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
 
-      // Update chat metadata
       await firestore().collection('chats').doc(`${userId}_${doctorId}`).set(
         {
           userId,
@@ -120,16 +116,15 @@ export class ChatService {
     }
   }
 
-  // Get chat messages for a specific doctor (from memory cache)
+  // Get chat messages from memory
   getChatMessages(doctorId: string, doctor?: Doctor): Message[] {
     if (!this.chatHistory.has(doctorId) && doctor) {
-      // Initialize with greeting if no chat history exists
       this.chatHistory.set(doctorId, [this.generateGreeting(doctor)]);
     }
     return this.chatHistory.get(doctorId) || [];
   }
 
-  // Add a new message to chat (memory only)
+  // Add message to memory
   addMessage(doctorId: string, message: Message): void {
     const messages = this.chatHistory.get(doctorId) || [];
     messages.push(message);
@@ -142,18 +137,91 @@ export class ChatService {
     doctorId: string,
     message: Message,
   ): Promise<void> {
-    // Add to memory first
     this.addMessage(doctorId, message);
-
-    // Then save to Firebase
     await this.saveMessageToFirebase(userId, doctorId, message);
   }
 
-  // Generate automatic doctor responses
+  // --- New: Update a message ---
+  async updateMessage(
+    userId: string,
+    doctorId: string,
+    messageId: string,
+    data: Partial<Message>,
+  ): Promise<void> {
+    try {
+      const chatRef = this.getChatRef(userId, doctorId).doc(messageId);
+
+      await chatRef.update({
+        ...data,
+        edited: true,
+      });
+
+      const messages = this.chatHistory.get(doctorId) || [];
+      const updatedMessages = messages.map(msg =>
+        msg.id === messageId ? { ...msg, ...data, edited: true } : msg,
+      );
+      this.chatHistory.set(doctorId, updatedMessages);
+
+      console.log(`✅ Message ${messageId} updated`);
+    } catch (error) {
+      console.error('❌ Error updating message:', error);
+      throw error;
+    }
+  }
+
+  // --- New: Delete a message ---
+  async deleteMessage(
+    userId: string,
+    doctorId: string,
+    messageId: string,
+  ): Promise<void> {
+    try {
+      const chatRef = this.getChatRef(userId, doctorId).doc(messageId);
+      await chatRef.delete();
+
+      const messages = this.chatHistory.get(doctorId) || [];
+      this.chatHistory.set(
+        doctorId,
+        messages.filter(msg => msg.id !== messageId),
+      );
+
+      console.log(`✅ Message ${messageId} deleted`);
+    } catch (error) {
+      console.error('❌ Error deleting message:', error);
+      throw error;
+    }
+  }
+
+  // Clear chat history
+  async clearChatHistory(userId: string, doctorId: string): Promise<void> {
+    try {
+      this.chatHistory.delete(doctorId);
+
+      const chatRef = this.getChatRef(userId, doctorId);
+      const snapshot = await chatRef.get();
+      const batch = firestore().batch();
+      snapshot.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+
+      await firestore()
+        .collection('chats')
+        .doc(`${userId}_${doctorId}`)
+        .delete();
+      console.log('✅ Chat history cleared');
+    } catch (error) {
+      console.error('❌ Error clearing chat history:', error);
+    }
+  }
+
+  // Get all chat sessions
+  getAllChatSessions(): string[] {
+    return Array.from(this.chatHistory.keys());
+  }
+
+  // Generate automatic doctor response
   generateDoctorResponse(userMessage: string, doctor: Doctor): Message {
     const lowerMessage = userMessage.toLowerCase();
 
-    // Context-aware responses
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
       return this.createMessage(
         'Hello! How are you feeling today? Please tell me about your symptoms.',
@@ -195,7 +263,6 @@ export class ChatService {
       );
     }
 
-    // Default responses
     const responses = [
       'Thank you for sharing that information. Could you please provide more details?',
       'I understand your concern. When did these symptoms first start?',
@@ -209,7 +276,6 @@ export class ChatService {
     return this.createMessage(randomResponse, doctor);
   }
 
-  // Helper to create a message
   private createMessage(text: string, doctor: Doctor): Message {
     return {
       id: `doctor-${Date.now()}-${Math.random()}`,
@@ -220,39 +286,5 @@ export class ChatService {
       isLoading: false,
       error: false,
     };
-  }
-
-  // Clear chat history (memory and Firebase)
-  async clearChatHistory(userId: string, doctorId: string): Promise<void> {
-    try {
-      // Clear from memory
-      this.chatHistory.delete(doctorId);
-
-      // Clear from Firebase
-      const chatRef = this.getChatRef(userId, doctorId);
-      const snapshot = await chatRef.get();
-
-      const batch = firestore().batch();
-      snapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-
-      await batch.commit();
-
-      // Delete chat metadata
-      await firestore()
-        .collection('chats')
-        .doc(`${userId}_${doctorId}`)
-        .delete();
-
-      console.log('✅ Chat history cleared');
-    } catch (error) {
-      console.error('❌ Error clearing chat history:', error);
-    }
-  }
-
-  // Get all chat sessions
-  getAllChatSessions(): string[] {
-    return Array.from(this.chatHistory.keys());
   }
 }

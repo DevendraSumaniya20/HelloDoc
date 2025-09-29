@@ -122,6 +122,7 @@ export interface Message {
   type?: 'text' | 'image' | 'voice';
   isLoading?: boolean; // For showing loading state
   error?: boolean; // For error states
+  edited?: boolean; // ✅ add this line
 }
 
 export interface Doctor {

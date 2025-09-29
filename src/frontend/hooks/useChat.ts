@@ -244,6 +244,48 @@ export function useChat(
     }
   }, []);
 
+  const editMessage = useCallback(
+    async (messageId: string, newText: string) => {
+      if (!user?.uid || !doctor?.id) return;
+
+      try {
+        // Update locally
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === messageId
+              ? { ...msg, text: newText, edited: true } // Marks message as edited
+              : msg,
+          ),
+        );
+
+        // Update in Firebase
+        await chatService.updateMessage(user.uid, doctor.id, messageId, {
+          text: newText,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [user?.uid, doctor?.id],
+  );
+
+  const deleteMessage = useCallback(
+    async (messageId: string) => {
+      if (!user?.uid || !doctor?.id) return;
+
+      try {
+        // Remove locally
+        setMessages(prev => prev.filter(msg => msg.id !== messageId));
+
+        // Delete from Firebase
+        await chatService.deleteMessage(user.uid, doctor.id, messageId);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [user?.uid, doctor?.id],
+  );
+
   return {
     messages,
     inputText,
@@ -254,5 +296,7 @@ export function useChat(
     isLoading,
     isConnected,
     retryConnection,
+    editMessage,
+    deleteMessage,
   };
 }
