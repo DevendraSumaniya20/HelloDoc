@@ -16,6 +16,7 @@ import SocialButton from './SocialButton';
 import TypingIndicator from './TypingIndicator';
 import ParticleBackground from './ParticleBackground';
 import SlideContent from './SlideContent';
+import ProfileImage from './ProfileImage';
 
 const Components = {
   AuthHeader,
@@ -36,6 +37,7 @@ const Components = {
   AnimatedIcon,
   ParticleBackground,
   SlideContent,
+  ProfileImage,
 };
 
 export default Components;

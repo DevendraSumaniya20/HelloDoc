@@ -1,3 +1,4 @@
+// src/screens/Chat/Chat.tsx
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -5,6 +6,8 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
+  Text,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -12,6 +15,7 @@ import { MainStackParamList, Doctor, Message } from '../../types/types';
 import Colors from '../../constants/color';
 import { useChat } from '../../hooks/useChat';
 import Components from '../../components';
+import { moderateScale } from '../../constants/responsive';
 
 type ChatProps = NativeStackScreenProps<MainStackParamList, 'Chat'>;
 
@@ -29,18 +33,24 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   }
 
-  const { messages, inputText, setInputText, sendMessage, isTyping } =
-    useChat(doctor);
+  const {
+    messages,
+    inputText,
+    setInputText,
+    sendMessage,
+    isTyping,
+    isLoading,
+  } = useChat(doctor);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !isLoading) {
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   // Handle back navigation
   const handleGoBack = () => {
@@ -94,6 +104,25 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   const renderListFooter = () => (
     <Components.TypingIndicator doctor={doctor} isVisible={isTyping} />
   );
+
+  // Render loading state while fetching chat history
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Components.ChatHeader
+          doctor={doctor}
+          onBack={handleGoBack}
+          onCall={handleCall}
+          onVideoCall={handleVideoCall}
+          onInfo={handleDoctorInfo}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading chat history...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -155,6 +184,18 @@ const styles = StyleSheet.create({
   messagesContainer: {
     flexGrow: 1,
     paddingVertical: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+  },
+  loadingText: {
+    marginTop: moderateScale(16),
+    fontSize: 16,
+    color: Colors.grayDark,
+    fontWeight: '500',
   },
 });
 

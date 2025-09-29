@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Doctor } from '../types/types';
 import Colors from '../constants/color';
-import { moderateScale } from '../constants/responsive';
+import { moderateScale, scale } from '../constants/responsive';
 import Icons from '../constants/svgPath';
 
 interface ChatHeaderProps {
@@ -40,10 +40,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backIcon} onPress={onBack}>
-          <Icons.LeftArrow height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white} stroke={Colors.white}/>
+          <Icons.LeftArrow
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+            // fill={Colors.black}
+            // stroke={Colors.black}
+          />
         </TouchableOpacity>
 
         <View style={styles.doctorInfo}>
@@ -68,14 +73,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.actionButton} onPress={onCall}>
-            
-            <Icons.Call height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white} />
+            <Icons.Call height={moderateScale(20)} width={moderateScale(20)} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onVideoCall}>
-            <Icons.Video height={moderateScale(20)} width={moderateScale(20)} fill={Colors.white}  stroke={Colors.white}/>
+            <Icons.Video height={moderateScale(20)} width={moderateScale(20)} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onInfo}>
-            <Icons.Dots height={moderateScale(16)} width={moderateScale(16)}  fill={Colors.white} stroke={Colors.white}/>
+            <Icons.Dots height={moderateScale(16)} width={moderateScale(16)} />
           </TouchableOpacity>
         </View>
       </View>
@@ -85,7 +89,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Colors.neutral,
+    backgroundColor: Colors.white,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: moderateScale(16),
@@ -100,11 +104,6 @@ const styles = StyleSheet.create({
     padding: moderateScale(8),
     marginRight: moderateScale(8),
   },
-  backIconText: {
-    fontSize: 24,
-    color: Colors.white,
-    fontWeight: '600',
-  },
   doctorInfo: {
     flex: 1,
     flexDirection: 'row',
@@ -115,16 +114,16 @@ const styles = StyleSheet.create({
     height: moderateScale(40),
     borderRadius: moderateScale(20),
     marginRight: moderateScale(12),
-    borderWidth: 2,
-    borderColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.black,
   },
   doctorDetails: {
     flex: 1,
   },
   doctorName: {
-    fontSize: 18,
+    fontSize: scale(12),
     fontWeight: '600',
-    color: Colors.white,
+    color: Colors.black,
     marginBottom: moderateScale(2),
   },
   doctorStatus: {
@@ -147,8 +146,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#6B7280',
   },
   statusText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: scale(10),
+    color: Colors.black,
   },
   headerActions: {
     flexDirection: 'row',
@@ -157,10 +156,6 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: moderateScale(8),
     marginLeft: moderateScale(4),
-  },
-  actionButtonText: {
-    fontSize: 20,
-    color: Colors.white,
   },
 });
 
