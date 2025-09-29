@@ -32,8 +32,8 @@ const Login: React.FC = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const { login, loginWithGoogle, isLoading } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test1@gmail.com');
+  const [password, setPassword] = useState('Test@123');
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 

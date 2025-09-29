@@ -8,17 +8,16 @@ import {
   Alert,
   StatusBar,
   ActivityIndicator,
-  Dimensions,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { moderateScale } from '../../constants/responsive';
 import Colors from '../../constants/color';
-import Components from '../../components';
+import InputField from '../../components/InputField';
 import { useAuth } from '../../hooks/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import navigationStrings from '../../constants/navigationString';
 
-const { width } = Dimensions.get('window');
-
-// Define the type for updateUserProfile
 export interface UpdateUserProfileInput {
   firstName?: string;
   lastName?: string;
@@ -27,7 +26,8 @@ export interface UpdateUserProfileInput {
 }
 
 const Profile: React.FC = () => {
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateUserProfile, logout } = useAuth();
+  const navigation = useNavigation();
 
   const [email, setEmail] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
@@ -37,7 +37,6 @@ const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
-  // Initial values to track changes
   const [initialValues, setInitialValues] = useState({
     firstName: '',
     lastName: '',
@@ -45,7 +44,6 @@ const Profile: React.FC = () => {
     photoURL: '',
   });
 
-  // Sync auth data into local state
   useEffect(() => {
     if (user) {
       const userEmail = user.email ?? '';
@@ -61,7 +59,6 @@ const Profile: React.FC = () => {
       setDisplayName(userDisplayName);
       setPhotoURL(userPhotoURL);
 
-      // Set initial values for change tracking
       setInitialValues({
         firstName: userFirstName,
         lastName: userLastName,
@@ -71,7 +68,6 @@ const Profile: React.FC = () => {
     }
   }, [user]);
 
-  // Track changes
   useEffect(() => {
     const changed =
       firstName !== initialValues.firstName ||
@@ -98,7 +94,6 @@ const Profile: React.FC = () => {
     try {
       await updateUserProfile(updatedData);
 
-      // Update initial values after successful save
       setInitialValues({
         firstName: updatedData.firstName!,
         lastName: updatedData.lastName!,
@@ -135,6 +130,30 @@ const Profile: React.FC = () => {
     );
   };
 
+  const handleLogout = (): void => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              // Navigation will happen automatically via AuthContext
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
   const resetChanges = (): void => {
     setFirstName(initialValues.firstName);
     setLastName(initialValues.lastName);
@@ -142,24 +161,28 @@ const Profile: React.FC = () => {
     setPhotoURL(initialValues.photoURL);
   };
 
-  // Show loading state if user not loaded yet
+  // Show loading only if user is null on initial mount
+  // Don't show loading during logout process
   if (!user) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Loading profile...</Text>
-      </View>
-    );
+    return null; // Let AuthContext handle navigation
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
 
-      {/* Header */}
+      {/* Header with Back Button */}
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>My Profile</Text>
-        <Text style={styles.subtitle}>Manage your personal information</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backIcon}>←</Text>
+        </TouchableOpacity>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.header}>My Profile</Text>
+        </View>
       </View>
 
       <ScrollView
@@ -169,41 +192,21 @@ const Profile: React.FC = () => {
       >
         {/* Profile Image Section */}
         <View style={styles.profileSection}>
-          <View style={styles.imageContainer}>
-            <View style={styles.profileImageWrapper}>
-              <Image source={{ uri: photoURL }} style={styles.profileImage} />
-              <TouchableOpacity
-                style={styles.editIcon}
-                onPress={handleImagePicker}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.editIconText}>📷</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.profileImageWrapper}>
+            <Image source={{ uri: photoURL }} style={styles.profileImage} />
+            <TouchableOpacity
+              style={styles.editIcon}
+              onPress={handleImagePicker}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.editIconText}>📷</Text>
+            </TouchableOpacity>
           </View>
 
           <Text style={styles.displayNameText}>
             {displayName || `${firstName} ${lastName}` || 'No Name'}
           </Text>
           <Text style={styles.emailText}>{email}</Text>
-
-          {/* Profile Stats */}
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>4.8</Text>
-              <Text style={styles.statLabel}>Rating</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>127</Text>
-              <Text style={styles.statLabel}>Consultations</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>98%</Text>
-              <Text style={styles.statLabel}>Satisfaction</Text>
-            </View>
-          </View>
         </View>
 
         {/* Profile Form */}
@@ -220,14 +223,14 @@ const Profile: React.FC = () => {
             )}
           </View>
 
-          <Components.InputField
+          <InputField
             label="Display Name"
             placeholder="Enter your display name"
             value={displayName}
             onChangeText={setDisplayName}
           />
 
-          <Components.InputField
+          <InputField
             label="First Name"
             placeholder="Enter your first name"
             value={firstName}
@@ -235,7 +238,7 @@ const Profile: React.FC = () => {
             required
           />
 
-          <Components.InputField
+          <InputField
             label="Last Name"
             placeholder="Enter your last name"
             value={lastName}
@@ -243,7 +246,7 @@ const Profile: React.FC = () => {
             required
           />
 
-          <Components.InputField label="Email Address" value={email} disabled />
+          <InputField label="Email Address" value={email} disabled />
         </View>
 
         {/* Action Buttons */}
@@ -260,20 +263,22 @@ const Profile: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.white} />
             ) : (
-              <>
-                <Text style={styles.saveButtonText}>
-                  {hasChanges ? '💾 Save Changes' : '✅ Up to Date'}
-                </Text>
-              </>
+              <Text style={styles.saveButtonText}>
+                {hasChanges ? '💾 Save Changes' : '✅ Up to Date'}
+              </Text>
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={handleLogout}
+            activeOpacity={0.8}
+          >
             <Text style={styles.logoutButtonText}>🚪 Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -282,13 +287,11 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
   },
   loadingText: {
     marginTop: moderateScale(16),
@@ -302,22 +305,35 @@ const styles = StyleSheet.create({
     paddingBottom: moderateScale(16),
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(20),
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: moderateScale(12),
+  },
+  backIcon: {
+    fontSize: 24,
+    color: Colors.black,
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   header: {
     fontSize: 28,
     fontWeight: '700',
     color: Colors.black,
-    marginBottom: moderateScale(4),
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.grayDark,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: moderateScale(100),
+    paddingBottom: moderateScale(40),
   },
   profileSection: {
     backgroundColor: Colors.white,
@@ -325,12 +341,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: moderateScale(16),
   },
-  imageContainer: {
-    alignItems: 'center',
-    marginBottom: moderateScale(16),
-  },
   profileImageWrapper: {
     position: 'relative',
+    marginBottom: moderateScale(16),
   },
   profileImage: {
     width: moderateScale(120),
@@ -373,36 +386,6 @@ const styles = StyleSheet.create({
   emailText: {
     fontSize: 16,
     color: Colors.grayDark,
-    marginBottom: moderateScale(20),
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F1F5F9',
-    paddingVertical: moderateScale(16),
-    paddingHorizontal: moderateScale(20),
-    borderRadius: moderateScale(12),
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.primary,
-    marginBottom: moderateScale(2),
-  },
-  statLabel: {
-    fontSize: 12,
-    color: Colors.grayDark,
-    textAlign: 'center',
-  },
-  statDivider: {
-    width: 1,
-    height: moderateScale(30),
-    backgroundColor: '#CBD5E1',
-    marginHorizontal: moderateScale(16),
   },
   formCard: {
     backgroundColor: Colors.white,

@@ -1,11 +1,10 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import screens from '../screens';
 import navigationStrings from '../constants/navigationString';
 import {
@@ -16,6 +15,7 @@ import {
 import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
 import TabNavigation from './TabNavigation';
+import { CommonActions } from '@react-navigation/native';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStackNav = createNativeStackNavigator<AuthStackParamList>();
@@ -75,11 +75,46 @@ const Navigation: React.FC = () => {
   const [initialRoute, setInitialRoute] = useState<
     keyof RootStackParamList | null
   >(null);
+  const navigationRef = useRef<any>(null);
+  const prevAuthState = useRef<boolean | null>(null);
 
   useEffect(() => {
     // Splash is always the first route
     setInitialRoute(navigationStrings.Splash);
   }, []);
+
+  // Handle authentication state changes and navigate accordingly
+  useEffect(() => {
+    if (initializing || !navigationRef.current) return;
+
+    // Only act on actual auth state changes, not initial render
+    if (
+      prevAuthState.current !== null &&
+      prevAuthState.current !== isAuthenticated
+    ) {
+      if (!isAuthenticated) {
+        // User logged out - navigate to AuthStack
+        console.log('🚪 User logged out, navigating to AuthStack');
+        navigationRef.current?.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'AuthStack' }],
+          }),
+        );
+      } else {
+        // User logged in - navigate to MainStack
+        console.log('✅ User logged in, navigating to MainStack');
+        navigationRef.current?.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'MainStack' }],
+          }),
+        );
+      }
+    }
+
+    prevAuthState.current = isAuthenticated;
+  }, [isAuthenticated, initializing]);
 
   if (initializing || initialRoute === null) {
     return (
@@ -90,7 +125,7 @@ const Navigation: React.FC = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Suspense
         fallback={
           <View style={styles.loadingContainer}>
@@ -110,7 +145,6 @@ const Navigation: React.FC = () => {
           />
 
           {/* Show intro only if first launch */}
-
           {isFirstLaunch && (
             <RootStack.Screen
               name={navigationStrings.Intro}

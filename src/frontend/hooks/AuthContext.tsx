@@ -487,11 +487,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      await logoutFirebase();
+      // 1️⃣ Store provider before clearing user
+      const currentProvider = user?.provider;
+
+      // 2️⃣ Clear intervals and listeners first
+      if (userCheckIntervalRef.current) {
+        clearInterval(userCheckIntervalRef.current);
+        userCheckIntervalRef.current = null;
+      }
+
+      if (firestoreListenerRef.current) {
+        firestoreListenerRef.current();
+        firestoreListenerRef.current = null;
+      }
+
+      // 3️⃣ Clear storage
       await clearUserFromStorage();
+
+      // 4️⃣ Google signout if needed
+      if (currentProvider === 'google') {
+        try {
+          const googleUser = await GoogleSignin.getCurrentUser();
+          if (googleUser) {
+            await GoogleSignin.signOut();
+            console.log('✅ Google signout completed');
+          }
+        } catch (error) {
+          console.log('Google signout error (non-critical):', error);
+        }
+      }
+
+      // 5️⃣ Firebase signout
+      await logoutFirebase();
+
+      // 6️⃣ Clear user state last
       setUser(null);
+      currentUserRef.current = null;
+
+      console.log('✅ Logout completed successfully');
     } catch (error) {
       console.error('❌ Logout error:', error);
+      // Force clear user state even on error
+      setUser(null);
+      currentUserRef.current = null;
+      throw error;
     }
   };
 
