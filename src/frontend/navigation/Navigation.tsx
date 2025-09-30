@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
@@ -15,7 +15,6 @@ import {
 import { useAuth } from '../hooks/AuthContext';
 import Colors from '../constants/color';
 import TabNavigation from './TabNavigation';
-import { CommonActions } from '@react-navigation/native';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStackNav = createNativeStackNavigator<AuthStackParamList>();
@@ -51,21 +50,21 @@ const AuthStack: React.FC = () => (
       name={navigationStrings.Register}
       component={screens.Register}
     />
-    {/* Add WebView to AuthStack so it's accessible during registration */}
+    {/* WebView is globally defined, but often needed in Auth for T&C */}
     <AuthStackNav.Screen
       name={navigationStrings.WebView}
       component={screens.WebView}
-      options={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}
+      options={{ headerShown: false }}
     />
   </AuthStackNav.Navigator>
 );
 
 // --- Main Stack ---
 const MainStack: React.FC = () => (
-  <MainStackNav.Navigator screenOptions={mainScreenOptions}>
+  <MainStackNav.Navigator
+    initialRouteName="Tabs" // Start flow on the Tabs container
+    screenOptions={mainScreenOptions}
+  >
     <MainStackNav.Screen name="Tabs" component={TabNavigation} />
     <MainStackNav.Screen
       name={navigationStrings.Profile}
@@ -79,12 +78,10 @@ const MainStack: React.FC = () => (
       name={navigationStrings.WebView}
       component={screens.WebView}
     />
-
     <MainStackNav.Screen
       name={navigationStrings.Chat}
       component={screens.Chat}
     />
-
     <MainStackNav.Screen
       name={navigationStrings.Search}
       component={screens.Search}
@@ -95,51 +92,45 @@ const MainStack: React.FC = () => (
 // --- Root Navigation ---
 const Navigation: React.FC = () => {
   const { isAuthenticated, initializing, isFirstLaunch } = useAuth();
-  const [initialRoute, setInitialRoute] = useState<
-    keyof RootStackParamList | null
-  >(null);
+
+  // Use a state variable for the initial screen to handle the very first boot.
+  const [isReady, setIsReady] = useState(false);
   const navigationRef = useRef<any>(null);
   const prevAuthState = useRef<boolean | null>(null);
 
+  // Set the navigation reference as ready
   useEffect(() => {
-    // Splash is always the first route
-    setInitialRoute(navigationStrings.Splash);
+    setIsReady(true);
   }, []);
 
   // Handle authentication state changes and navigate accordingly
   useEffect(() => {
-    if (initializing || !navigationRef.current) return;
+    if (initializing || !navigationRef.current || !isReady) {
+      prevAuthState.current = isAuthenticated;
+      return;
+    }
 
-    // Only act on actual auth state changes, not initial render
+    // Logic to run AFTER Splash/Intro is completed and auth state changes
     if (
       prevAuthState.current !== null &&
       prevAuthState.current !== isAuthenticated
     ) {
-      if (!isAuthenticated) {
-        // User logged out - navigate to AuthStack
-        console.log('🚪 User logged out, navigating to AuthStack');
-        navigationRef.current?.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'AuthStack' }],
-          }),
-        );
-      } else {
-        // User logged in - navigate to MainStack
-        console.log('✅ User logged in, navigating to MainStack');
-        navigationRef.current?.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'MainStack' }],
-          }),
-        );
-      }
+      const targetStack = isAuthenticated ? 'MainStack' : 'AuthStack';
+      console.log(`Auth state changed. Navigating to ${targetStack}`);
+
+      // Reset the navigation stack to the target root stack
+      navigationRef.current?.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: targetStack }],
+        }),
+      );
     }
 
     prevAuthState.current = isAuthenticated;
-  }, [isAuthenticated, initializing]);
+  }, [isAuthenticated, initializing, isReady]);
 
-  if (initializing || initialRoute === null) {
+  if (initializing) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -148,7 +139,7 @@ const Navigation: React.FC = () => {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer ref={navigationRef} onReady={() => setIsReady(true)}>
       <Suspense
         fallback={
           <View style={styles.loadingContainer}>
@@ -157,17 +148,17 @@ const Navigation: React.FC = () => {
         }
       >
         <RootStack.Navigator
-          initialRouteName={initialRoute}
+          // Splash screen is ALWAYS the first screen shown while `initializing` is true.
+          initialRouteName={navigationStrings.Splash}
           screenOptions={defaultScreenOptions}
         >
-          {/* Always show splash first */}
           <RootStack.Screen
             name={navigationStrings.Splash}
             component={screens.Splash}
             options={{ animation: 'fade' }}
           />
 
-          {/* Show intro only if first launch */}
+          {/* Intro screen is injected if it's the first launch */}
           {isFirstLaunch && (
             <RootStack.Screen
               name={navigationStrings.Intro}
@@ -176,14 +167,14 @@ const Navigation: React.FC = () => {
             />
           )}
 
-          {/* Auth flow */}
+          {/* Auth flow (Accessed via navigation reset) */}
           <RootStack.Screen
             name="AuthStack"
             component={AuthStack}
             options={{ animation: 'slide_from_bottom' }}
           />
 
-          {/* Main flow */}
+          {/* Main flow (Accessed via navigation reset) */}
           <RootStack.Screen
             name="MainStack"
             component={MainStack}

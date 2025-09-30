@@ -5,7 +5,6 @@ import type {
 
 /**
  * AUTH STACK PARAMS
- * (Login/Register flow + WebView for Terms/Privacy)
  */
 export type AuthStackParamList = {
   Login: undefined;
@@ -13,35 +12,29 @@ export type AuthStackParamList = {
   WebView: { url: string; title?: string };
 };
 
+// --------------------------------------------------------------------------
 /**
  * MAIN STACK PARAMS
- * (Home/Settings flow, plus optional Splash if first launch)
  */
 export type MainStackParamList = {
-  Splash: undefined;
-  Home: undefined;
-  Setting: undefined;
+  Tabs: undefined; // Main entry point for tab navigation (Home/Search/etc)
   Chat: { doctor: Doctor };
-  Tabs: undefined;
   Profile: undefined;
+  Setting: undefined;
   WebView: { url: string; title?: string };
-  Search: { doctor: Doctor };
+  Search: undefined;
 };
+// --------------------------------------------------------------------------
 
 /**
  * ROOT STACK PARAMS
- * (Holds Auth and Main as nested stacks + fallback splash)
+ * Contains only the nested stacks and initial flow screens (Splash/Intro).
  */
 export type RootStackParamList = {
+  Splash: undefined;
+  Intro: undefined;
   AuthStack: undefined;
   MainStack: undefined;
-  Intro: undefined;
-  Login: undefined;
-  Register: undefined;
-  Splash: undefined;
-  Setting: undefined;
-  Profile: undefined;
-  WebView: { url: string; title?: string };
 };
 
 // --- Extend React Navigation types globally ---
@@ -53,6 +46,7 @@ declare global {
 
 /**
  * --- SCREEN PROPS (typed hooks into navigation/route params) ---
+ * (These remain mostly the same, but ensure they use the correct param list)
  */
 export type SplashScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -74,7 +68,7 @@ export type IntroNavigationProp = NativeStackNavigationProp<
 
 export type HomeScreenProps = NativeStackScreenProps<
   MainStackParamList,
-  'Home'
+  'Tabs'
 >;
 export type SettingScreenProps = NativeStackScreenProps<
   MainStackParamList,
@@ -94,6 +88,11 @@ export type RegisterScreenProps = NativeStackScreenProps<
   'Register'
 >;
 
+/**
+ * --- DOMAIN MODELS ---
+ * (Ensure these interfaces are included as they are used by the navigation types)
+ */
+
 export interface User {
   uid: string;
   email?: string | null;
@@ -111,10 +110,6 @@ export interface RegisterData {
   email: string;
   password: string;
 }
-
-/**
- * --- DOMAIN MODELS ---
- */
 
 export interface HealthCategory {
   id: string;

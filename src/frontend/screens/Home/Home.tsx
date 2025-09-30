@@ -29,7 +29,7 @@ const Home: React.FC = () => {
 
   type HomeScreenNavigationProp = NativeStackNavigationProp<
     MainStackParamList,
-    'Home'
+    'Tabs'
   >;
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -124,14 +124,12 @@ const Home: React.FC = () => {
 
   // Navigate to search screen
   const handleSearchPress = () => {
-    navigation.navigate(navigationStrings.Search, {
-      doctor: {} as Doctor,
-    });
+    navigation.navigate(navigationStrings.Search);
   };
 
   // Navigate to search screen when "View All" is pressed
   const handleViewAllDoctors = () => {
-    navigation.navigate(navigationStrings.Search, { doctor: {} as Doctor });
+    navigation.navigate(navigationStrings.Search);
   };
 
   if (!user || !isAuthenticated) return null;

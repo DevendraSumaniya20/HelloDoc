@@ -79,15 +79,15 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: moderateScale(28),
+    borderRadius: moderateScale(26),
     paddingHorizontal: moderateScale(16),
     paddingVertical: moderateScale(6),
     minHeight: moderateScale(44),
     borderTopWidth: 1,
     borderTopColor: Colors.grayLight,
     backgroundColor: Colors.white,
-    marginHorizontal: moderateScale(8),
-    marginBottom: moderateScale(-18),
+    marginHorizontal: moderateScale(12),
+    marginBottom: moderateScale(18),
   },
   attachButton: {
     padding: moderateScale(6),
