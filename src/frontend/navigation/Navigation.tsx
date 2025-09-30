@@ -79,6 +79,16 @@ const MainStack: React.FC = () => (
       name={navigationStrings.WebView}
       component={screens.WebView}
     />
+
+    <MainStackNav.Screen
+      name={navigationStrings.Chat}
+      component={screens.Chat}
+    />
+
+    <MainStackNav.Screen
+      name={navigationStrings.Search}
+      component={screens.Search}
+    />
   </MainStackNav.Navigator>
 );
 

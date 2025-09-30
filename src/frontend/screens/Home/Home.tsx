@@ -122,6 +122,18 @@ const Home: React.FC = () => {
     return 'User';
   };
 
+  // Navigate to search screen
+  const handleSearchPress = () => {
+    navigation.navigate(navigationStrings.Search, {
+      doctor: {} as Doctor,
+    });
+  };
+
+  // Navigate to search screen when "View All" is pressed
+  const handleViewAllDoctors = () => {
+    navigation.navigate(navigationStrings.Search, { doctor: {} as Doctor });
+  };
+
   if (!user || !isAuthenticated) return null;
 
   return (
@@ -148,14 +160,18 @@ const Home: React.FC = () => {
               />
             </TouchableOpacity>
           </View>
-          <View style={HomeStyle.searchContainer}>
+
+          {/* Search Bar - Now pressable */}
+          <TouchableOpacity
+            style={HomeStyle.searchContainer}
+            onPress={handleSearchPress}
+            activeOpacity={0.7}
+          >
             <Icons.Search height={20} width={20} fill={Colors.white} />
-            <TextInput
-              style={HomeStyle.searchInput}
-              placeholder="Search doctors, medicines etc"
-              placeholderTextColor={Colors.neutral}
-            />
-          </View>
+            <Text style={HomeStyle.searchPlaceholder}>
+              Search doctors, specialties...
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Content */}
@@ -176,7 +192,7 @@ const Home: React.FC = () => {
           <View style={HomeStyle.section}>
             <View style={HomeStyle.sectionHeader}>
               <Text style={HomeStyle.sectionTitle}>Top Doctor's Nearby</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleViewAllDoctors}>
                 <Text style={HomeStyle.viewAllText}>View All</Text>
               </TouchableOpacity>
             </View>

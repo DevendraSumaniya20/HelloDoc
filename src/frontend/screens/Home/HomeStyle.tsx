@@ -43,8 +43,10 @@ const HomeStyle = StyleSheet.create({
     backgroundColor: Colors.grayMedium,
     borderRadius: moderateScale(10),
     paddingHorizontal: moderateScale(10),
-    paddingVertical: Platform.OS === 'ios' ? moderateScale(8) : 0,
+    paddingVertical:
+      Platform.OS === 'ios' ? moderateScale(8) : moderateScale(6),
     gap: 5,
+    marginTop: moderateScale(10),
   },
   searchIcon: {
     fontSize: scale(16),
@@ -120,6 +122,11 @@ const HomeStyle = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  searchPlaceholder: {
+    flex: 1,
+    color: Colors.neutral,
+    fontSize: scale(14),
   },
 });
 

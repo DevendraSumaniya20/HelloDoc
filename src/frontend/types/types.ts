@@ -25,6 +25,7 @@ export type MainStackParamList = {
   Tabs: undefined;
   Profile: undefined;
   WebView: { url: string; title?: string };
+  Search: { doctor: Doctor };
 };
 
 /**

@@ -294,8 +294,11 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
             <TouchableOpacity onPress={handleCancelSelection}>
               <Text style={ChatStyle.cancelText}>Cancel</Text>
             </TouchableOpacity>
+            {/* FIX: Ensure the entire text is wrapped in Text component, 
+               and complex expressions are clean. This is the most likely spot 
+               where surrounding whitespace gets rendered as a text node. */}
             <Text style={ChatStyle.selectionCount}>
-              {selectedMessages.size} selected
+              {`${selectedMessages.size} selected`}
             </Text>
             <View style={ChatStyle.selectionActions}>
               {selectedMessages.size === 1 && (
@@ -367,8 +370,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
             />
           )}
         </KeyboardAvoidingView>
-        {/* Search Modal */}
-        // Replace your Search Modal section (lines 403-473) with this:
         {/* Search Modal */}
         <Modal
           visible={isSearchVisible}
@@ -455,7 +456,7 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
               ) : (
                 <View style={ChatStyle.emptySearchContainer}>
                   <Text style={ChatStyle.emptySearchText}>
-                    No messages found matching "{searchQuery}"
+                    {`No messages found matching "${searchQuery}"`}
                   </Text>
                 </View>
               )

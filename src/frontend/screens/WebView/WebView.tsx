@@ -23,7 +23,10 @@ type WebViewScreenProps = NativeStackScreenProps<MainStackParamList, 'WebView'>;
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const WebViewScreen: React.FC<WebViewScreenProps> = ({ route, navigation }) => {
-  const { url, title } = route.params;
+  const { url, title } = route.params || {
+    url: 'https://www.birajtech.com/',
+    title: 'Web View',
+  };
   const [loading, setLoading] = useState<boolean>(true);
 
   useLayoutEffect(() => {

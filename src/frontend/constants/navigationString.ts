@@ -1,3 +1,5 @@
+import Search from '../screens/Search/Search';
+
 // navigationStrings.ts
 const navigationStrings = {
   Splash: 'Splash',
@@ -9,6 +11,7 @@ const navigationStrings = {
   Chat: 'Chat',
   Profile: 'Profile',
   WebView: 'WebView',
+  Search: 'Search',
 } as const;
 
 export default navigationStrings;

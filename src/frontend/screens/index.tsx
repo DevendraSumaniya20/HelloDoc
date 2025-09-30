@@ -10,6 +10,7 @@ export type ScreenList = {
   Chat: React.LazyExoticComponent<React.ComponentType<any>>;
   Profile: React.LazyExoticComponent<React.ComponentType<any>>;
   WebView: React.LazyExoticComponent<React.ComponentType<any>>;
+  Search: React.LazyExoticComponent<React.ComponentType<any>>;
 };
 
 const screens: ScreenList = {
@@ -22,6 +23,7 @@ const screens: ScreenList = {
   Chat: React.lazy(() => import('./Chat/Chat')),
   Profile: React.lazy(() => import('./Profile/Profile')),
   WebView: React.lazy(() => import('./WebView/WebView')),
+  Search: React.lazy(() => import('./Search/Search')),
 };
 
 export default screens;
