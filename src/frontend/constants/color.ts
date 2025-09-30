@@ -31,7 +31,7 @@ const Colors = {
 
   // Status Colors
   success: '#059669', // Medical green
-  warning: '#EA580C', // Medical orange
+  warning: '#FFC107', // Medical orange
   error: '#DC2626', // Medical red
   info: '#3182CE', // Medical blue for info messages
 

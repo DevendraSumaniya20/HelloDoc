@@ -1,7 +1,10 @@
 import React, { FC, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CheckboxWithTerms from './CheckboxWithTerms'; // Import your checkbox
+import CheckboxWithTerms from './CheckboxWithTerms';
+
+import Colors from '../constants/color';
+import { moderateScale, scale } from '../constants/responsive';
 
 type AlertVariant = 'success' | 'error' | 'warning' | 'info';
 
@@ -31,14 +34,14 @@ const CustomAlert: FC<CustomAlertProps> = ({
   const getVariantColor = () => {
     switch (variant) {
       case 'success':
-        return '#4CAF50';
+        return Colors.success;
       case 'error':
-        return '#F44336';
+        return Colors.error;
       case 'warning':
-        return '#FF9800';
+        return Colors.warning;
       case 'info':
       default:
-        return '#2196F3';
+        return Colors.info;
     }
   };
 
@@ -65,7 +68,7 @@ const CustomAlert: FC<CustomAlertProps> = ({
             onTermsPress={() => {}}
             onPrivacyPress={() => {}}
             label="Don't show this again"
-            containerStyle={{ marginBottom: 20 }}
+            containerStyle={{ marginBottom: moderateScale(16) }}
           />
 
           <View style={styles.buttonContainer}>
@@ -93,28 +96,28 @@ export default CustomAlert;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
     width: '80%',
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(20),
     borderWidth: 2,
   },
   title: {
-    fontSize: 18,
+    fontSize: scale(20),
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: moderateScale(10),
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: scale(14),
+    marginBottom: moderateScale(16),
     textAlign: 'center',
-    color: '#333',
+    color: Colors.textPrimary,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -122,14 +125,14 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    backgroundColor: '#eee',
-    borderRadius: 5,
+    paddingVertical: moderateScale(10),
+    marginHorizontal: moderateScale(5),
+    backgroundColor: Colors.grayLight,
+    borderRadius: moderateScale(6),
     alignItems: 'center',
   },
   buttonText: {
     fontWeight: 'bold',
-    color: '#000',
+    color: Colors.textPrimary,
   },
 });
