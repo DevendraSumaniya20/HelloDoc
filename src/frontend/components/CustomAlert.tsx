@@ -17,6 +17,10 @@ interface CustomAlertProps {
   onRightPress?: () => void;
   leftText?: string;
   rightText?: string;
+  showTerms?: boolean; // new optional prop
+  showPrivacy?: boolean; // new optional prop
+  onTermsPress?: () => void; // optional callback
+  onPrivacyPress?: () => void; // optional callback
 }
 
 const CustomAlert: FC<CustomAlertProps> = ({
@@ -28,6 +32,10 @@ const CustomAlert: FC<CustomAlertProps> = ({
   onRightPress,
   leftText = 'Cancel',
   rightText = 'OK',
+  showTerms = false,
+  showPrivacy = false,
+  onTermsPress,
+  onPrivacyPress,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -61,15 +69,19 @@ const CustomAlert: FC<CustomAlertProps> = ({
           </Text>
           <Text style={styles.description}>{description}</Text>
 
-          {/* Don't show again checkbox */}
-          <CheckboxWithTerms
-            checked={dontShowAgain}
-            onToggle={() => setDontShowAgain(prev => !prev)}
-            onTermsPress={() => {}}
-            onPrivacyPress={() => {}}
-            label="Don't show this again"
-            containerStyle={{ marginBottom: moderateScale(16) }}
-          />
+          {/* Optional Terms & Privacy checkbox */}
+          {(showTerms || showPrivacy) && (
+            <CheckboxWithTerms
+              checked={dontShowAgain}
+              onToggle={() => setDontShowAgain(prev => !prev)}
+              onTermsPress={onTermsPress || (() => {})}
+              onPrivacyPress={onPrivacyPress || (() => {})}
+              label="Don't show this again"
+              containerStyle={{ marginBottom: moderateScale(16) }}
+              showTerms={showTerms}
+              showPrivacy={showPrivacy}
+            />
+          )}
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity

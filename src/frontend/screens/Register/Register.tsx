@@ -6,6 +6,7 @@ import {
   Alert,
   StyleSheet,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import { RegisterScreenProps } from '../../types/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { useAuth } from '../../hooks/AuthContext';
 import Components from '../../components';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import Icons from '../../constants/svgPath';
+import navigationStrings from '../../constants/navigationString';
 
 interface FormErrors {
   firstName?: string;
@@ -290,6 +292,12 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
         style={styles.keyboard}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
+        <TouchableOpacity
+          style={{ marginLeft: 20, marginTop: 10 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Icons.LeftArrow width={24} height={24} />
+        </TouchableOpacity>
         <ScrollView
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
@@ -378,20 +386,20 @@ const Register: React.FC<RegisterScreenProps> = ({ navigation }) => {
           <Components.CheckboxWithTerms
             checked={acceptTerms}
             onToggle={handleTermsToggle}
-            onTermsPress={() =>
-              Alert.alert(
-                'Terms & Conditions',
-                'Terms & Conditions content would be displayed here.',
-              )
-            }
-            onPrivacyPress={() =>
-              Alert.alert(
-                'Privacy Policy',
-                'Privacy Policy content would be displayed here.',
-              )
-            }
             disabled={isLoading}
             errorMessage={touched.terms ? errors.terms : undefined}
+            onPrivacyPress={() => {
+              navigation.navigate(navigationStrings.WebView, {
+                url: 'https://www.birajtech.com/privacy-policy',
+                title: 'Privacy Policy',
+              });
+            }}
+            onTermsPress={() => {
+              navigation.navigate(navigationStrings.WebView, {
+                url: 'https://www.birajtech.com/terms-and-condition',
+                title: 'Terms of Service',
+              });
+            }}
           />
 
           {/* Register Button */}

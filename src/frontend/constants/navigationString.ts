@@ -8,6 +8,7 @@ const navigationStrings = {
   Setting: 'Setting',
   Chat: 'Chat',
   Profile: 'Profile',
+  WebView: 'WebView',
 } as const;
 
 export default navigationStrings;

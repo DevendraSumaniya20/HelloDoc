@@ -24,7 +24,7 @@ const Home: React.FC = () => {
   const { user, checkUserExists, isAuthenticated } = useAuth();
   const [isCheckingUser, setIsCheckingUser] = useState(false);
 
-  // State for showing the alert
+  // State for showing the AI alert
   const [showAlert, setShowAlert] = useState(false);
 
   type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -65,17 +65,27 @@ const Home: React.FC = () => {
     { id: '4', name: 'General Surgery', icon: '🏥', color: '#F8F0FF' },
   ];
 
-  // Show alert when screen is focused
+  // Show AI alert 5 seconds after Home screen is focused
   useFocusEffect(
     useCallback(() => {
-      const checkAlertPreference = async () => {
+      let timer: NodeJS.Timeout;
+
+      const showAIAlert = async () => {
         const dontShow = await AsyncStorage.getItem('dontShowAIAlert');
-        if (!dontShow) setShowAlert(true);
+        if (!dontShow) {
+          timer = setTimeout(() => setShowAlert(true), 5000);
+        }
       };
-      checkAlertPreference();
+
+      showAIAlert();
+
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
     }, []),
   );
 
+  // Verify user exists when screen is focused
   useFocusEffect(
     useCallback(() => {
       const verifyUser = async () => {
@@ -91,6 +101,7 @@ const Home: React.FC = () => {
     }, [user, isAuthenticated, checkUserExists]),
   );
 
+  // Check user when app comes to foreground
   useEffect(() => {
     const handleAppStateChange = (nextAppState: string) => {
       if (nextAppState === 'active' && user && isAuthenticated) {
@@ -173,13 +184,13 @@ const Home: React.FC = () => {
               <Components.DoctorCard
                 key={doc.id}
                 doctor={doc}
-                onConsult={() => {
+                onConsult={() =>
                   setTimeout(() => {
                     navigation.navigate(navigationStrings.Chat, {
                       doctor: doc,
                     });
-                  }, 300);
-                }}
+                  }, 300)
+                }
               />
             ))}
           </View>
@@ -211,6 +222,20 @@ const Home: React.FC = () => {
         rightText="Got it"
         onLeftPress={() => setShowAlert(false)}
         onRightPress={() => setShowAlert(false)}
+        showTerms={true}
+        showPrivacy={true}
+        onPrivacyPress={() => {
+          navigation.navigate(navigationStrings.WebView, {
+            url: 'https://www.birajtech.com/privacy-policy',
+            title: 'Privacy Policy',
+          });
+        }}
+        onTermsPress={() => {
+          navigation.navigate(navigationStrings.WebView, {
+            url: 'https://www.birajtech.com/terms-and-condition',
+            title: 'Terms of Service',
+          });
+        }}
       />
     </SafeAreaView>
   );

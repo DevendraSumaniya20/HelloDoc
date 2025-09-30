@@ -51,6 +51,15 @@ const AuthStack: React.FC = () => (
       name={navigationStrings.Register}
       component={screens.Register}
     />
+    {/* Add WebView to AuthStack so it's accessible during registration */}
+    <AuthStackNav.Screen
+      name={navigationStrings.WebView}
+      component={screens.WebView}
+      options={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    />
   </AuthStackNav.Navigator>
 );
 
@@ -65,6 +74,10 @@ const MainStack: React.FC = () => (
     <MainStackNav.Screen
       name={navigationStrings.Setting}
       component={screens.Setting}
+    />
+    <MainStackNav.Screen
+      name={navigationStrings.WebView}
+      component={screens.WebView}
     />
   </MainStackNav.Navigator>
 );

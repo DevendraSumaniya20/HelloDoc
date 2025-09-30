@@ -5,11 +5,12 @@ import type {
 
 /**
  * AUTH STACK PARAMS
- * (Login/Register flow)
+ * (Login/Register flow + WebView for Terms/Privacy)
  */
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
+  WebView: { url: string; title?: string };
 };
 
 /**
@@ -23,6 +24,7 @@ export type MainStackParamList = {
   Chat: { doctor: Doctor };
   Tabs: undefined;
   Profile: undefined;
+  WebView: { url: string; title?: string };
 };
 
 /**
@@ -38,6 +40,7 @@ export type RootStackParamList = {
   Splash: undefined;
   Setting: undefined;
   Profile: undefined;
+  WebView: { url: string; title?: string };
 };
 
 // --- Extend React Navigation types globally ---
@@ -75,6 +78,11 @@ export type HomeScreenProps = NativeStackScreenProps<
 export type SettingScreenProps = NativeStackScreenProps<
   MainStackParamList,
   'Setting'
+>;
+
+export type WebScreenProps = NativeStackScreenProps<
+  MainStackParamList | AuthStackParamList,
+  'WebView'
 >;
 export type LoginScreenProps = NativeStackScreenProps<
   AuthStackParamList,
@@ -120,9 +128,9 @@ export interface Message {
   sender: 'user' | 'doctor';
   timestamp: Date;
   type?: 'text' | 'image' | 'voice';
-  isLoading?: boolean; // For showing loading state
-  error?: boolean; // For error states
-  edited?: boolean; // ✅ add this line
+  isLoading?: boolean;
+  error?: boolean;
+  edited?: boolean;
 }
 
 export interface Doctor {
@@ -134,7 +142,7 @@ export interface Doctor {
   image: string;
   status?: 'online' | 'offline' | 'busy';
   lastSeen?: string;
-  isAI?: boolean; // Flag to identify AI doctors
+  isAI?: boolean;
   isOnline?: boolean;
 }
 

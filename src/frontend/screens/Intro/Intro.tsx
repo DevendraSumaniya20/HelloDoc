@@ -335,7 +335,7 @@ const Intro: React.FC = () => {
           >
             <Text style={IntroStyle.skipButtonText}>
               {currentSlide === slides.length - 1
-                ? '🚀 Get Started'
+                ? 'Get Started'
                 : 'Skip Introduction'}
             </Text>
           </TouchableOpacity>

@@ -5,13 +5,15 @@ import Colors from '../constants/color';
 interface CheckboxWithTermsProps {
   checked: boolean;
   onToggle: () => void;
-  onTermsPress: () => void;
-  onPrivacyPress: () => void;
+  onTermsPress?: () => void;
+  onPrivacyPress?: () => void;
   disabled?: boolean;
   errorMessage?: string;
   errorStyle?: object;
   containerStyle?: object;
   label?: string | null;
+  showTerms?: boolean; // new optional prop
+  showPrivacy?: boolean; // new optional prop
 }
 
 const CheckboxWithTerms: React.FC<CheckboxWithTermsProps> = ({
@@ -23,6 +25,8 @@ const CheckboxWithTerms: React.FC<CheckboxWithTermsProps> = ({
   errorMessage,
   errorStyle,
   containerStyle,
+  showTerms = true,
+  showPrivacy = true,
 }) => {
   const hasError = Boolean(errorMessage);
 
@@ -48,6 +52,7 @@ const CheckboxWithTerms: React.FC<CheckboxWithTermsProps> = ({
         >
           {checked && <Text style={styles.checkmark}>✓</Text>}
         </View>
+
         <Text
           style={[
             styles.text,
@@ -55,22 +60,30 @@ const CheckboxWithTerms: React.FC<CheckboxWithTermsProps> = ({
             hasError && styles.textError,
           ]}
         >
-          I agree to the{' '}
-          <Text
-            style={[styles.link, disabled && styles.linkDisabled]}
-            onPress={disabled ? undefined : onTermsPress}
-          >
-            Terms & Conditions
-          </Text>{' '}
-          and{' '}
-          <Text
-            style={[styles.link, disabled && styles.linkDisabled]}
-            onPress={disabled ? undefined : onPrivacyPress}
-          >
-            Privacy Policy
-          </Text>
+          I agree{' '}
+          {showTerms && (
+            <>
+              to the{' '}
+              <Text
+                style={[styles.link, disabled && styles.linkDisabled]}
+                onPress={disabled ? undefined : onTermsPress}
+              >
+                Terms & Conditions
+              </Text>
+            </>
+          )}
+          {showTerms && showPrivacy && ' and '}
+          {showPrivacy && (
+            <Text
+              style={[styles.link, disabled && styles.linkDisabled]}
+              onPress={disabled ? undefined : onPrivacyPress}
+            >
+              Privacy Policy
+            </Text>
+          )}
         </Text>
       </TouchableOpacity>
+
       {hasError && (
         <Text style={[styles.errorText, errorStyle]}>{errorMessage}</Text>
       )}
@@ -86,9 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  containerError: {
-    // Optional: Add subtle background or border for error state
-  },
+  containerError: {},
   containerDisabled: {
     opacity: 0.6,
   },
@@ -126,7 +137,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   textError: {
-    color: '#374151', // Keep text readable but indicate error state
+    color: '#374151',
   },
   textDisabled: {
     color: '#9ca3af',
@@ -144,7 +155,7 @@ const styles = StyleSheet.create({
     color: '#ef4444',
     fontSize: 12,
     marginTop: 4,
-    marginLeft: 32, // Align with text, accounting for checkbox width + margin
+    marginLeft: 32,
   },
 });
 

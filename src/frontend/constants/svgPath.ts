@@ -31,6 +31,11 @@ import Trophy from '../assets/svg/trophy.svg';
 import ExportIcon from '../assets/svg/export.svg';
 import DeleteIcon from '../assets/svg/delete.svg';
 import SendIcon from '../assets/svg/send.svg';
+import TermsAndCondtion from '../assets/svg/license.svg';
+import PrivacyPolicy from '../assets/svg/privacy.svg';
+import ContactUs from '../assets/svg/contact.svg';
+import Faq from '../assets/svg/faq.svg';
+import Logout from '../assets/svg/log-out.svg';
 
 const Icons = {
   Cross,
@@ -66,6 +71,11 @@ const Icons = {
   ExportIcon,
   DeleteIcon,
   SendIcon,
+  TermsAndCondtion,
+  PrivacyPolicy,
+  ContactUs,
+  Faq,
+  Logout,
 };
 
 export default Icons;
