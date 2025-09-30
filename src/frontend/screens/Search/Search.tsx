@@ -9,7 +9,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useRoute,
+  RouteProp,
+} from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList, Doctor } from '../../types/types';
 import Colors from '../../constants/color';
@@ -24,32 +29,44 @@ type SearchScreenNavigationProp = NativeStackNavigationProp<
   'Search'
 >;
 
+type SearchScreenRouteProp = RouteProp<MainStackParamList, 'Search'>;
+
 const Search: React.FC = () => {
   const navigation = useNavigation<SearchScreenNavigationProp>();
+  const route = useRoute<SearchScreenRouteProp>();
+
+  // State initialization
   const [searchQuery, setSearchQuery] = useState('');
+  // Set isSearching to false by default, filtering is synchronous
   const [isSearching, setIsSearching] = useState(false);
 
-  // Filter doctors based on search query
+  // This derived state is reactive to changes in searchQuery
   const filteredDoctors = searchQuery.trim()
     ? allDoctors.filter(
         doctor =>
+          // Check name or specialty for the search query
           doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()),
       )
-    : allDoctors;
+    : allDoctors; // Show all doctors if search is empty
 
-  // Auto-focus search input when screen loads
   useFocusEffect(
     useCallback(() => {
-      setSearchQuery('');
-    }, []),
+      // Get the category query from navigation params
+      const categoryQuery = route.params?.categoryQuery;
+
+      setSearchQuery(categoryQuery || '');
+
+      setIsSearching(false);
+
+      return () => {};
+    }, [route.params?.categoryQuery]),
   );
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    setIsSearching(true);
-    // Simulate search delay
-    setTimeout(() => setIsSearching(false), 300);
+
+    setIsSearching(false);
   };
 
   const handleDoctorPress = (doctor: Doctor) => {
@@ -97,6 +114,7 @@ const Search: React.FC = () => {
             style={SearchStyle.searchInput}
             placeholder="Search doctors, specialties..."
             placeholderTextColor={Colors.neutral}
+            // Use the state driven by the focus effect
             value={searchQuery}
             onChangeText={handleSearch}
             autoFocus

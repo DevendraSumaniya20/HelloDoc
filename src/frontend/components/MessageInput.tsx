@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.grayLight,
     backgroundColor: Colors.white,
     marginHorizontal: moderateScale(12),
-    marginBottom: moderateScale(18),
+    marginBottom: moderateScale(-14),
   },
   attachButton: {
     padding: moderateScale(6),

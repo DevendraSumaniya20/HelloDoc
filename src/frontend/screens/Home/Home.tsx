@@ -132,6 +132,12 @@ const Home: React.FC = () => {
     navigation.navigate(navigationStrings.Search);
   };
 
+  const handleCategoryPress = (categoryName: string) => {
+    navigation.navigate(navigationStrings.Search, {
+      categoryQuery: categoryName, // Pass the category name as a parameter
+    });
+  };
+
   if (!user || !isAuthenticated) return null;
 
   return (
@@ -219,7 +225,11 @@ const Home: React.FC = () => {
             </View>
             <View style={HomeStyle.categoriesGrid}>
               {healthCategories.map(cat => (
-                <Components.CategoryCard key={cat.id} category={cat} />
+                <Components.CategoryCard
+                  key={cat.id}
+                  category={cat}
+                  onPress={() => handleCategoryPress(cat.name)}
+                />
               ))}
             </View>
           </View>

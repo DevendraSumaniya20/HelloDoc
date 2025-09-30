@@ -29,7 +29,7 @@ export type MainStackParamList = {
   Profile: undefined;
   Setting: undefined;
   WebView: { url: string; title?: string };
-  Search: undefined;
+  Search: { categoryQuery: string } | undefined;
 };
 // --------------------------------------------------------------------------
 
