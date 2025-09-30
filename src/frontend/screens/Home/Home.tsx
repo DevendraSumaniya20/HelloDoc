@@ -243,7 +243,7 @@ const Home: React.FC = () => {
         description="This app is connected with AI. Responses you receive are AI-generated and for informational purposes only."
         variant="warning"
         leftText="Cancel"
-        rightText="Got it"
+        rightText="Agree"
         onLeftPress={() => setShowAlert(false)}
         onRightPress={() => setShowAlert(false)}
         showTerms={true}
