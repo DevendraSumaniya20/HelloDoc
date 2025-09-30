@@ -1,15 +1,14 @@
 import React from 'react';
 import {
-  View,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
   Text,
+  View,
 } from 'react-native';
 import Colors from '../constants/color';
-import { moderateScale } from '../constants/responsive';
+import { moderateScale, scale } from '../constants/responsive';
+import Icons from '../constants/svgPath';
 
 interface MessageInputProps {
   value: string;
@@ -28,101 +27,106 @@ const MessageInput: React.FC<MessageInputProps> = ({
   placeholder = 'Type your message...',
   maxLength = 1000,
 }) => {
-
   const handleSend = () => {
     if (value.trim().length === 0) return;
     onSend();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.inputContainer}
-    >
-      <View style={styles.inputWrapper}>
-        <TouchableOpacity style={styles.attachButton} onPress={onAttachment}>
-          <Text style={styles.attachButtonText}>📎</Text>
-        </TouchableOpacity>
+    <View style={styles.inputWrapper}>
+      <TouchableOpacity style={styles.attachButton} onPress={onAttachment}>
+        <Icons.Clip height={moderateScale(30)} width={moderateScale(30)} />
+      </TouchableOpacity>
 
-        <TextInput
-          style={styles.textInput}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={Colors.grayDark}
-          multiline
-          maxLength={maxLength}
-        />
+      <TextInput
+        style={styles.textInput}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={Colors.grayDark}
+        multiline
+        maxLength={maxLength}
+      />
 
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            value.trim().length > 0
-              ? styles.sendButtonActive
-              : styles.sendButtonInactive,
-          ]}
-          onPress={handleSend}
-          disabled={value.trim().length === 0}
-        >
-          <Text style={styles.sendButtonText}>
-            {value.trim().length > 0 ? '➤' : '🎤'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      <TouchableOpacity
+        style={[
+          styles.sendButton,
+          value.trim().length > 0
+            ? styles.sendButtonActive
+            : styles.sendButtonInactive,
+        ]}
+        onPress={handleSend}
+        disabled={value.trim().length === 0}
+      >
+        {value.trim().length > 0 ? (
+          <Icons.SendIcon
+            height={moderateScale(24)}
+            width={moderateScale(24)}
+            fill={Colors.white}
+          />
+        ) : (
+          <Icons.MicroPhone
+            height={moderateScale(24)}
+            width={moderateScale(24)}
+          />
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  inputContainer: {
-    backgroundColor: Colors.white,
-    paddingVertical: moderateScale(12),
-    paddingHorizontal: moderateScale(16),
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
   inputWrapper: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: '#F9FAFB',
-    borderRadius: moderateScale(24),
+    alignItems: 'center',
+    borderRadius: moderateScale(28),
     paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(8),
-    minHeight: moderateScale(48),
+    paddingVertical: moderateScale(6),
+    minHeight: moderateScale(44),
+    borderTopWidth: 1,
+    borderTopColor: Colors.grayLight,
+    backgroundColor: Colors.white,
+    marginHorizontal: moderateScale(8),
+    marginBottom: moderateScale(-18),
   },
   attachButton: {
-    padding: moderateScale(8),
-    marginRight: moderateScale(8),
-  },
-  attachButtonText: {
-    fontSize: 20,
-    color: Colors.grayDark,
+    padding: moderateScale(6),
+    marginRight: moderateScale(4),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: scale(12),
     color: Colors.black,
-    maxHeight: moderateScale(100),
-    paddingVertical: moderateScale(8),
-    lineHeight: 20,
+    maxHeight: moderateScale(80),
+    paddingVertical: moderateScale(4),
+    paddingHorizontal: moderateScale(4),
+    textAlignVertical: 'center',
   },
   sendButton: {
-    width: moderateScale(40),
-    height: moderateScale(40),
-    borderRadius: moderateScale(20),
+    width: moderateScale(36),
+    height: moderateScale(36),
+    borderRadius: moderateScale(18),
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: moderateScale(8),
+    marginLeft: moderateScale(4),
   },
   sendButtonActive: {
     backgroundColor: Colors.primary,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   sendButtonInactive: {
-    backgroundColor: Colors.grayLight,
+    backgroundColor: '#D1D5DB',
   },
   sendButtonText: {
-    fontSize: 18,
+    fontSize: scale(14),
     color: Colors.white,
+    fontWeight: '600',
   },
 });
 

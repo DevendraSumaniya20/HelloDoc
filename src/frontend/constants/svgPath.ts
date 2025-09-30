@@ -28,6 +28,9 @@ import MobileAlt from '../assets/svg/mobile-alt.svg';
 import RobotAI from '../assets/svg/robot.svg';
 import Rocket from '../assets/svg/rocket.svg';
 import Trophy from '../assets/svg/trophy.svg';
+import ExportIcon from '../assets/svg/export.svg';
+import DeleteIcon from '../assets/svg/delete.svg';
+import SendIcon from '../assets/svg/send.svg';
 
 const Icons = {
   Cross,
@@ -60,6 +63,9 @@ const Icons = {
   RobotAI,
   Rocket,
   Trophy,
+  ExportIcon,
+  DeleteIcon,
+  SendIcon,
 };
 
 export default Icons;

@@ -156,23 +156,19 @@ const Home: React.FC = () => {
                 key={doc.id}
                 doctor={doc}
                 onConsult={() => {
-                  console.log('Home - DoctorCard onConsult pressed');
-                  console.log('Home - Doctor data:', doc);
-                  console.log('Home - Navigation object:', navigation);
                   console.log(
-                    'Home - Navigation string:',
-                    navigationStrings.Chat,
+                    'Doctor pressed, waiting 300ms before navigation',
                   );
-
-                  try {
-                    console.log('Home - About to navigate to Chat');
-                    navigation.navigate(navigationStrings.Chat, {
-                      doctor: doc,
-                    });
-                    console.log('Home - Navigation call completed');
-                  } catch (error) {
-                    console.error('Home - Navigation error:', error);
-                  }
+                  setTimeout(() => {
+                    try {
+                      navigation.navigate(navigationStrings.Chat, {
+                        doctor: doc,
+                      });
+                      console.log('Navigated to Chat');
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                    }
+                  }, 300);
                 }}
               />
             ))}

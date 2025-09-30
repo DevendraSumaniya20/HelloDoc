@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import {
   View,
   FlatList,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -17,17 +16,18 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainStackParamList, Doctor, Message } from '../../types/types';
 import Colors from '../../constants/color';
 import Components from '../../components';
-import { moderateScale } from '../../constants/responsive';
 import { useChat } from '../../hooks/useChat';
+import ChatStyle from './ChatStyle';
+import Icons from '../../constants/svgPath';
+import { moderateScale } from '../../constants/responsive';
+import LinearGradient from 'react-native-linear-gradient';
+import { getGradientProps } from '../../utils/gradients';
 
-// Define props for Chat screen from navigation stack
 type ChatProps = NativeStackScreenProps<MainStackParamList, 'Chat'>;
 
 const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
-  // Get doctor info from navigation route
   const doctorFromRoute = route.params?.doctor;
 
-  // If doctor is missing, show error screen
   if (!doctorFromRoute) {
     return (
       <Components.ErrorScreen
@@ -41,23 +41,17 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   const currentDoctor = doctorFromRoute;
 
   // -------------------- State Management --------------------
-  // Search modal
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [matches, setMatches] = useState<number[]>([]); // Indices of messages matching search
-  const [activeMatchIndex, setActiveMatchIndex] = useState(0); // Currently highlighted match
+  const [matches, setMatches] = useState<number[]>([]);
+  const [activeMatchIndex, setActiveMatchIndex] = useState(0);
 
-  // Selection mode (for multi-selecting messages)
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<Set<string>>(
     new Set(),
   );
 
-  // More options modal (⋮ menu)
-  const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
-
   // -------------------- Custom Chat Hook --------------------
-  // Handles messages, input, sending, editing, deleting
   const {
     messages: chatMessages,
     inputText,
@@ -70,9 +64,8 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     clearChat,
   } = useChat(currentDoctor);
 
-  const flatListRef = useRef<FlatList>(null); // Reference to scroll FlatList
+  const flatListRef = useRef<FlatList>(null);
 
-  // Scroll to end whenever new messages arrive
   useEffect(() => {
     if (chatMessages.length > 0 && !isLoading) {
       setTimeout(
@@ -91,13 +84,10 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     console.log('View profile functionality not implemented');
 
   const handleSearch = () => {
-    setIsMoreOptionsVisible(false);
     setIsSearchVisible(true);
   };
 
   const handleClearChat = async () => {
-    setIsMoreOptionsVisible(false);
-    // Confirmation alert before clearing all messages
     Alert.alert('Clear Chat', 'Are you sure you want to delete all messages?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -114,13 +104,16 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     ]);
   };
 
-  // Long press on a message activates selection mode
+  const handleExportChat = () => {
+    console.log('Export chat functionality not implemented');
+    Alert.alert('Export Chat', 'This feature will be available soon!');
+  };
+
   const handleLongPress = (messageId: string) => {
     setIsSelectionMode(true);
     setSelectedMessages(new Set([messageId]));
   };
 
-  // Toggle selection of a message in multi-select mode
   const toggleMessageSelection = (messageId: string) => {
     const newSelected = new Set(selectedMessages);
     if (newSelected.has(messageId)) {
@@ -130,13 +123,11 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     }
     setSelectedMessages(newSelected);
 
-    // Exit selection mode if no messages selected
     if (newSelected.size === 0) {
       setIsSelectionMode(false);
     }
   };
 
-  // Delete selected messages in batch
   const handleDeleteSelected = async () => {
     Alert.alert(
       'Delete Messages',
@@ -162,13 +153,11 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   };
 
-  // Cancel selection mode
   const handleCancelSelection = () => {
     setSelectedMessages(new Set());
     setIsSelectionMode(false);
   };
 
-  // Edit a single selected message
   const handleEditSelected = () => {
     if (selectedMessages.size === 1) {
       const msgId = Array.from(selectedMessages)[0];
@@ -181,7 +170,7 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
             { text: 'Cancel', style: 'cancel' },
             {
               text: 'Save',
-              onPress: async newText => {
+              onPress: async (newText: string | undefined) => {
                 if (newText && newText !== message.text) {
                   try {
                     await editMessage(msgId, newText);
@@ -202,7 +191,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   };
 
   // -------------------- Search Functionality --------------------
-  // Filter messages based on search query
   const filteredMessages = useMemo(() => {
     if (!searchQuery) return chatMessages;
     return chatMessages.filter(m =>
@@ -210,7 +198,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   }, [chatMessages, searchQuery]);
 
-  // Track all message indices that match search
   useEffect(() => {
     if (!searchQuery) {
       setMatches([]);
@@ -229,7 +216,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     setActiveMatchIndex(0);
   }, [searchQuery, chatMessages]);
 
-  // Scroll to the currently highlighted search match
   useEffect(() => {
     if (matches.length > 0 && flatListRef.current) {
       try {
@@ -246,7 +232,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     }
   }, [activeMatchIndex, matches]);
 
-  // Optimize FlatList performance by providing item layout
   const getItemLayout = (_: any, index: number) => ({
     length: 80,
     offset: 80 * index,
@@ -254,7 +239,6 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
   });
 
   // -------------------- Render Functions --------------------
-  // Render a single message bubble
   const renderMessage = ({ item, index }: { item: Message; index: number }) => {
     const isActiveMatch = matches[activeMatchIndex] === index;
     const isSelected = selectedMessages.has(item.id);
@@ -297,311 +281,196 @@ const Chat: React.FC<ChatProps> = ({ route, navigation }) => {
     );
   };
 
-  // Render typing indicator at the end of messages
   const renderListFooter = () => (
     <Components.TypingIndicator doctor={currentDoctor} isVisible={isTyping} />
   );
 
   // -------------------- UI Rendering --------------------
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header: Shows selection mode or normal chat header */}
-      {isSelectionMode ? (
-        <View style={styles.selectionHeader}>
-          <TouchableOpacity onPress={handleCancelSelection}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </TouchableOpacity>
-          <Text style={styles.selectionCount}>
-            {selectedMessages.size} selected
-          </Text>
-          <View style={styles.selectionActions}>
-            {selectedMessages.size === 1 && (
-              <TouchableOpacity
-                onPress={handleEditSelected}
-                style={styles.actionButton}
-              >
-                <Text style={styles.actionText}>Edit</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={handleDeleteSelected}
-              style={styles.actionButton}
-            >
-              <Text style={[styles.actionText, styles.deleteText]}>Delete</Text>
+    <LinearGradient {...getGradientProps()} style={{ flex: 1 }}>
+      <SafeAreaView style={ChatStyle.container}>
+        {isSelectionMode ? (
+          <View style={ChatStyle.selectionHeader}>
+            <TouchableOpacity onPress={handleCancelSelection}>
+              <Text style={ChatStyle.cancelText}>Cancel</Text>
             </TouchableOpacity>
+            <Text style={ChatStyle.selectionCount}>
+              {selectedMessages.size} selected
+            </Text>
+            <View style={ChatStyle.selectionActions}>
+              {selectedMessages.size === 1 && (
+                <TouchableOpacity
+                  onPress={handleEditSelected}
+                  style={ChatStyle.actionButton}
+                >
+                  <Text style={ChatStyle.actionText}>Edit</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                onPress={handleDeleteSelected}
+                style={ChatStyle.actionButton}
+              >
+                <Text style={[ChatStyle.actionText, ChatStyle.deleteText]}>
+                  Delete
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ) : (
-        <View style={styles.headerContainer}>
-          {/* Normal chat header */}
+        ) : (
           <Components.ChatHeader
             doctor={currentDoctor}
             onBack={handleGoBack}
             onCall={handleCall}
             onVideoCall={handleVideoCall}
             onProfilePress={handleViewProfile}
-          />
-          {/* More options button */}
-          <TouchableOpacity
-            style={styles.moreButton}
-            onPress={() => setIsMoreOptionsVisible(true)}
-          >
-            <Text style={styles.moreIcon}>⋮</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Chat messages */}
-      <KeyboardAvoidingView
-        style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        <FlatList
-          ref={flatListRef}
-          data={filteredMessages}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.messagesContainer}
-          showsVerticalScrollIndicator={false}
-          getItemLayout={getItemLayout}
-          renderItem={renderMessage}
-          ListFooterComponent={renderListFooter}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-          onLayout={() => {
-            if (chatMessages.length > 0)
-              flatListRef.current?.scrollToEnd({ animated: false });
-          }}
-        />
-
-        {/* Input box for sending messages */}
-        {!isSelectionMode && (
-          <Components.MessageInput
-            value={inputText}
-            onChangeText={setInputText}
-            onSend={() =>
-              sendMessage(status =>
-                console.log(
-                  `Message sent. Doctor ${currentDoctor.name} status: ${status}`,
-                ),
-              )
-            }
-            placeholder={`Message Dr. ${currentDoctor.name}...`}
-            maxLength={1000}
+            onSearch={handleSearch}
+            onClearChat={handleClearChat}
+            onExport={handleExportChat}
           />
         )}
-      </KeyboardAvoidingView>
-
-      {/* More Options Modal (⋮) */}
-      <Modal
-        visible={isMoreOptionsVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsMoreOptionsVisible(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setIsMoreOptionsVisible(false)}
+        {/* Chat messages */}
+        <KeyboardAvoidingView
+          style={ChatStyle.chatContainer}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          <View style={styles.moreOptionsMenu}>
-            <TouchableOpacity style={styles.menuItem} onPress={handleSearch}>
-              <Text style={styles.menuItemText}>🔍 Search Messages</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={handleClearChat}>
-              <Text style={[styles.menuItemText, styles.dangerText]}>
-                🗑️ Clear All Chat
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* Search Modal */}
-      <Modal
-        visible={isSearchVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setIsSearchVisible(false)}
-      >
-        <View style={styles.searchModal}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Search Messages</Text>
-            <Text
-              style={styles.closeButton}
-              onPress={() => setIsSearchVisible(false)}
-            >
-              ×
-            </Text>
-          </View>
-
-          {/* Search input box */}
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search messages..."
-            style={styles.searchInput}
-          />
-
-          {/* List of messages matching search */}
           <FlatList
+            ref={flatListRef}
             data={filteredMessages}
             keyExtractor={item => item.id}
             renderItem={renderMessage}
+            getItemLayout={getItemLayout}
+            contentContainerStyle={ChatStyle.messagesContainer}
+            ListFooterComponent={renderListFooter}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              if (!isLoading && chatMessages.length > 0) {
+                flatListRef.current?.scrollToEnd({ animated: false });
+              }
+            }}
           />
 
-          {/* Navigation between matches */}
-          <View style={styles.searchNavigation}>
-            <Button
-              title="Prev"
-              disabled={matches.length === 0}
-              onPress={() =>
-                setActiveMatchIndex(
-                  prev => (prev - 1 + matches.length) % matches.length,
+          {/* Input box for sending messages */}
+          {!isSelectionMode && (
+            <Components.MessageInput
+              value={inputText}
+              onChangeText={setInputText}
+              onSend={() =>
+                sendMessage(status =>
+                  console.log(
+                    `Message sent. Doctor ${currentDoctor.name} status: ${status}`,
+                  ),
                 )
               }
+              placeholder={`Message Dr. ${currentDoctor.name}...`}
+              maxLength={1000}
             />
-            <Text>
-              {matches.length
-                ? `${activeMatchIndex + 1} of ${matches.length}`
-                : '0 of 0'}
-            </Text>
-            <Button
-              title="Next"
-              disabled={matches.length === 0}
-              onPress={() =>
-                setActiveMatchIndex(prev => (prev + 1) % matches.length)
-              }
+          )}
+        </KeyboardAvoidingView>
+        {/* Search Modal */}
+        // Replace your Search Modal section (lines 403-473) with this:
+        {/* Search Modal */}
+        <Modal
+          visible={isSearchVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => {
+            setIsSearchVisible(false);
+            setSearchQuery(''); // Clear search when closing
+          }}
+        >
+          <View style={ChatStyle.searchModal}>
+            <View style={ChatStyle.modalHeader}>
+              <Text style={ChatStyle.modalTitle}>Search Messages</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsSearchVisible(false);
+                  setSearchQuery(''); // Clear search when closing
+                }}
+                style={ChatStyle.closeButtonContainer}
+              >
+                <Icons.Cross
+                  width={moderateScale(30)}
+                  height={moderateScale(30)}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Search input box */}
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search messages..."
+              placeholderTextColor={Colors.grayDark}
+              style={ChatStyle.searchInput}
+              autoFocus
+              returnKeyType="search"
             />
+
+            {/* Navigation between matches - Show before results */}
+            {matches.length > 0 && (
+              <View style={ChatStyle.searchNavigation}>
+                <TouchableOpacity
+                  style={ChatStyle.navButton}
+                  onPress={() =>
+                    setActiveMatchIndex(
+                      prev => (prev - 1 + matches.length) % matches.length,
+                    )
+                  }
+                >
+                  <Icons.LeftArrow
+                    width={moderateScale(16)}
+                    height={moderateScale(16)}
+                    fill={Colors.white}
+                  />
+                </TouchableOpacity>
+                <Text style={ChatStyle.matchCount}>
+                  {`${activeMatchIndex + 1} of ${matches.length}`}
+                </Text>
+                <TouchableOpacity
+                  style={ChatStyle.navButton}
+                  onPress={() =>
+                    setActiveMatchIndex(prev => (prev + 1) % matches.length)
+                  }
+                >
+                  <Icons.LeftArrow
+                    width={moderateScale(16)}
+                    height={moderateScale(16)}
+                    fill={Colors.white}
+                    style={{ transform: [{ rotate: '180deg' }] }}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* List of ONLY matching messages */}
+            {searchQuery ? (
+              filteredMessages.length > 0 ? (
+                <FlatList
+                  data={filteredMessages}
+                  keyExtractor={item => item.id}
+                  renderItem={renderMessage}
+                  contentContainerStyle={ChatStyle.searchResultsContainer}
+                />
+              ) : (
+                <View style={ChatStyle.emptySearchContainer}>
+                  <Text style={ChatStyle.emptySearchText}>
+                    No messages found matching "{searchQuery}"
+                  </Text>
+                </View>
+              )
+            ) : (
+              <View style={ChatStyle.emptySearchContainer}>
+                <Text style={ChatStyle.emptySearchText}>
+                  Type to search messages
+                </Text>
+              </View>
+            )}
           </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
-
-// -------------------- Styles --------------------
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.grayLight },
-  chatContainer: { flex: 1 },
-  messagesContainer: { flexGrow: 1, paddingVertical: moderateScale(16) },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  moreButton: {
-    padding: moderateScale(12),
-    position: 'absolute',
-    right: moderateScale(8),
-    top: moderateScale(8),
-  },
-  moreIcon: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.black,
-  },
-  selectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(12),
-    backgroundColor: Colors.primary,
-  },
-  cancelText: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  selectionCount: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  selectionActions: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    marginLeft: moderateScale(12),
-  },
-  actionText: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  deleteText: {
-    color: '#ffcccb',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: moderateScale(60),
-    paddingRight: moderateScale(16),
-  },
-  moreOptionsMenu: {
-    backgroundColor: Colors.white,
-    borderRadius: moderateScale(8),
-    paddingVertical: moderateScale(8),
-    minWidth: moderateScale(200),
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  menuItem: {
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(12),
-  },
-  menuItemText: {
-    fontSize: 16,
-    color: Colors.black,
-  },
-  dangerText: {
-    color: Colors.error || '#FF0000',
-  },
-  searchModal: {
-    flex: 1,
-    backgroundColor: 'white',
-    marginTop: 100,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 16,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: Colors.grayDark,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 12,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  closeButton: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.grayDark,
-    paddingHorizontal: 8,
-  },
-  searchNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-});
 
 export default Chat;

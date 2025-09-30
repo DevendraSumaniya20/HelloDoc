@@ -23,6 +23,7 @@ interface ChatHeaderProps {
   onProfilePress?: () => void;
   onSearch?: () => void;
   onClearChat?: () => void;
+  onExport?: () => void;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -33,6 +34,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onProfilePress,
   onSearch,
   onClearChat,
+  onExport,
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -51,10 +53,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const toggleMenu = () => setMenuVisible(prev => !prev);
 
-  const handleOption = (option: 'search' | 'clear') => {
+  const handleOption = (option: 'search' | 'clear' | 'export') => {
     setMenuVisible(false);
     if (option === 'search' && onSearch) onSearch();
     if (option === 'clear' && onClearChat) onClearChat();
+    if (option === 'export' && onExport) onExport();
   };
 
   return (
@@ -101,33 +104,72 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.actionButton} onPress={toggleMenu}>
-            <Icons.Dots height={moderateScale(16)} width={moderateScale(16)} />
+            <Icons.Dots height={moderateScale(20)} width={moderateScale(20)} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Dropdown menu */}
-      {menuVisible && (
+      {/* Dropdown menu modal */}
+      <Modal
+        visible={menuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+      >
         <Pressable
           style={styles.menuOverlay}
           onPress={() => setMenuVisible(false)}
         >
           <View style={styles.menu}>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => handleOption('search')}
-            >
-              <Text style={styles.menuText}>Search</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => handleOption('clear')}
-            >
-              <Text style={styles.menuText}>Clear Chat</Text>
-            </TouchableOpacity>
+            {onSearch && (
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => handleOption('search')}
+              >
+                <Icons.Search
+                  height={moderateScale(18)}
+                  width={moderateScale(18)}
+                  fill={Colors.white}
+                  style={styles.menuIconSvg}
+                />
+                <Text style={styles.menuText}>Search Messages</Text>
+              </TouchableOpacity>
+            )}
+
+            {onExport && (
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => handleOption('export')}
+              >
+                <Icons.ExportIcon
+                  height={moderateScale(18)}
+                  width={moderateScale(18)}
+                  fill={Colors.white}
+                  style={styles.menuIconSvg}
+                />
+                <Text style={styles.menuText}>Export Chat</Text>
+              </TouchableOpacity>
+            )}
+
+            {onClearChat && (
+              <TouchableOpacity
+                style={[styles.menuItem, styles.menuItemLast]}
+                onPress={() => handleOption('clear')}
+              >
+                <Icons.DeleteIcon
+                  height={moderateScale(18)}
+                  width={moderateScale(18)}
+                  fill={Colors.white}
+                  style={styles.menuIconSvg}
+                />
+                <Text style={[styles.menuText, styles.dangerText]}>
+                  Clear Chat
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </Pressable>
-      )}
+      </Modal>
     </>
   );
 };
@@ -176,31 +218,60 @@ const styles = StyleSheet.create({
   headerActions: { flexDirection: 'row', alignItems: 'center' },
   actionButton: { padding: moderateScale(8), marginLeft: moderateScale(4) },
   menuOverlay: {
-    position: 'absolute',
-    top: moderateScale(60),
-    right: moderateScale(16),
-    left: 0,
-    bottom: 0,
-    zIndex: 100,
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: moderateScale(60),
+    paddingRight: moderateScale(16),
   },
   menu: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
     backgroundColor: Colors.white,
-    borderRadius: 6,
-    elevation: 4,
+    borderRadius: moderateScale(12),
+    paddingVertical: moderateScale(8),
+    minWidth: moderateScale(200),
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    width: moderateScale(140),
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   menuItem: {
-    padding: moderateScale(12),
+    flexDirection: 'row',
+    alignItems: 'center', // ✅ vertical alignment
+    paddingHorizontal: moderateScale(16),
+    paddingVertical: moderateScale(14),
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.grayLight,
   },
-  menuText: { fontSize: scale(14), color: Colors.black },
+
+  menuIconSvg: {
+    marginRight: moderateScale(12),
+  },
+
+  menuEmoji: {
+    fontSize: scale(16), // ✅ matches SVG size
+    marginRight: moderateScale(12),
+    textAlignVertical: 'center',
+  },
+
+  menuText: {
+    fontSize: scale(14),
+    color: Colors.black,
+    fontWeight: '500',
+  },
+
+  menuItemLast: {
+    borderBottomWidth: 0,
+  },
+  menuIcon: {
+    fontSize: 18,
+    marginRight: moderateScale(12),
+  },
+
+  dangerText: {
+    color: '#EF4444',
+  },
 });
 
 export default ChatHeader;

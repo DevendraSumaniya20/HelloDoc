@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es2017", // <-- add this
     "module": "ESNext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": false,
@@ -7,6 +8,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["node"]
+    "types": ["node"],
+    "lib": ["es2017", "dom"] // <-- ensures Set, Map, Promise, etc. are available
   }
 }
