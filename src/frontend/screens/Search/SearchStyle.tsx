@@ -5,7 +5,7 @@ import { moderateScale, scale } from '../../constants/responsive';
 const SearchStyle = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.grayDark,
+    backgroundColor: Colors.grayUltraLight,
   },
   header: {
     flexDirection: 'row',

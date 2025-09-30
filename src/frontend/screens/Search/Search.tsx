@@ -83,7 +83,12 @@ const Search: React.FC = () => {
           style={SearchStyle.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Icons.LeftArrow height={24} width={24} fill={Colors.white} />
+          <Icons.LeftArrow
+            height={24}
+            width={24}
+            fill={Colors.black}
+            stroke={Colors.black}
+          />
         </TouchableOpacity>
 
         <View style={SearchStyle.searchContainer}>
