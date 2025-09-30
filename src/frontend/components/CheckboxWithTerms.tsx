@@ -11,6 +11,7 @@ interface CheckboxWithTermsProps {
   errorMessage?: string;
   errorStyle?: object;
   containerStyle?: object;
+  label?: string | null;
 }
 
 const CheckboxWithTerms: React.FC<CheckboxWithTermsProps> = ({

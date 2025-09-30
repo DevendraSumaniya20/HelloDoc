@@ -17,6 +17,7 @@ import TypingIndicator from './TypingIndicator';
 import ParticleBackground from './ParticleBackground';
 import SlideContent from './SlideContent';
 import ProfileImage from './ProfileImage';
+import CustomAlert from './CustomAlert';
 
 const Components = {
   AuthHeader,
@@ -38,6 +39,7 @@ const Components = {
   ParticleBackground,
   SlideContent,
   ProfileImage,
+  CustomAlert,
 };
 
 export default Components;

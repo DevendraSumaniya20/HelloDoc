@@ -5,7 +5,6 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  Image,
   StatusBar,
   AppState,
 } from 'react-native';
@@ -19,10 +18,14 @@ import Components from '../../components';
 import Icons from '../../constants/svgPath';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import navigationStrings from '../../constants/navigationString';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home: React.FC = () => {
   const { user, checkUserExists, isAuthenticated } = useAuth();
   const [isCheckingUser, setIsCheckingUser] = useState(false);
+
+  // State for showing the alert
+  const [showAlert, setShowAlert] = useState(false);
 
   type HomeScreenNavigationProp = NativeStackNavigationProp<
     MainStackParamList,
@@ -35,23 +38,23 @@ const Home: React.FC = () => {
     {
       id: '1',
       name: 'Dr. Marcus Horizon',
-      specialty: 'Cardiology', // Fixed typo from 'Chardiologist'
+      specialty: 'Cardiology',
       rating: 4.7,
       reviews: 5,
       image:
         'https://thumbs.dreamstime.com/b/indian-doctor-mature-male-medical-standing-inside-hospital-handsome-model-portrait-43992356.jpg',
       isOnline: true,
-      isAI: true, // Add this to indicate it's an AI doctor
+      isAI: true,
     },
     {
       id: '2',
       name: 'Dr. Maria Elena',
-      specialty: 'Psychology', // Fixed from 'Psychologist'
+      specialty: 'Psychology',
       rating: 4.9,
       reviews: 10,
       image:
         'https://img.freepik.com/free-photo/pleased-young-female-doctor-wearing-medical-robe-stethoscope-around-neck-standing-with-closed-posture_409827-254.jpg',
-      isAI: true, // Add this to indicate it's an AI doctor
+      isAI: true,
     },
   ];
 
@@ -61,6 +64,17 @@ const Home: React.FC = () => {
     { id: '3', name: 'Neurologist', icon: '🧠', color: '#F0F8FF' },
     { id: '4', name: 'General Surgery', icon: '🏥', color: '#F8F0FF' },
   ];
+
+  // Show alert when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const checkAlertPreference = async () => {
+        const dontShow = await AsyncStorage.getItem('dontShowAIAlert');
+        if (!dontShow) setShowAlert(true);
+      };
+      checkAlertPreference();
+    }, []),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -102,7 +116,9 @@ const Home: React.FC = () => {
   return (
     <SafeAreaView style={HomeStyle.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.grayDark} />
+
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View style={HomeStyle.header}>
           <View style={HomeStyle.headerTop}>
             <View>
@@ -131,6 +147,7 @@ const Home: React.FC = () => {
           </View>
         </View>
 
+        {/* Content */}
         <View style={HomeStyle.content}>
           <TouchableOpacity style={HomeStyle.aiDoctorBanner}>
             <View style={HomeStyle.bannerContent}>
@@ -144,6 +161,7 @@ const Home: React.FC = () => {
             </View>
           </TouchableOpacity>
 
+          {/* Top Doctors */}
           <View style={HomeStyle.section}>
             <View style={HomeStyle.sectionHeader}>
               <Text style={HomeStyle.sectionTitle}>Top Doctor's Nearby</Text>
@@ -156,24 +174,17 @@ const Home: React.FC = () => {
                 key={doc.id}
                 doctor={doc}
                 onConsult={() => {
-                  console.log(
-                    'Doctor pressed, waiting 300ms before navigation',
-                  );
                   setTimeout(() => {
-                    try {
-                      navigation.navigate(navigationStrings.Chat, {
-                        doctor: doc,
-                      });
-                      console.log('Navigated to Chat');
-                    } catch (error) {
-                      console.error('Navigation error:', error);
-                    }
+                    navigation.navigate(navigationStrings.Chat, {
+                      doctor: doc,
+                    });
                   }, 300);
                 }}
               />
             ))}
           </View>
 
+          {/* Health Categories */}
           <View style={HomeStyle.section}>
             <View style={HomeStyle.sectionHeader}>
               <Text style={HomeStyle.sectionTitle}>Top Health Categories</Text>
@@ -189,6 +200,18 @@ const Home: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+
+      {/* AI Warning Alert */}
+      <Components.CustomAlert
+        visible={showAlert}
+        title="AI Assistant Notice"
+        description="This app is connected with AI. Responses you receive are AI-generated and for informational purposes only."
+        variant="warning"
+        leftText="Cancel"
+        rightText="Got it"
+        onLeftPress={() => setShowAlert(false)}
+        onRightPress={() => setShowAlert(false)}
+      />
     </SafeAreaView>
   );
 };
