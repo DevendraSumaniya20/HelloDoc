@@ -16,7 +16,7 @@ import Colors from '../../constants/color';
 import Components from '../../components';
 import Icons from '../../constants/svgPath';
 import navigationStrings from '../../constants/navigationString';
-import { StyleSheet } from 'react-native';
+import SearchStyle from './SearchStyle';
 
 type SearchScreenNavigationProp = NativeStackNavigationProp<
   MainStackParamList,
@@ -126,32 +126,32 @@ const Search: React.FC = () => {
   );
 
   const renderEmptyComponent = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>🔍</Text>
-      <Text style={styles.emptyTitle}>No doctors found</Text>
-      <Text style={styles.emptySubtitle}>
+    <View style={SearchStyle.emptyContainer}>
+      <Icons.Search height={64} width={64} fill={Colors.white} />
+      <Text style={SearchStyle.emptyTitle}>No doctors found</Text>
+      <Text style={SearchStyle.emptySubtitle}>
         Try searching with different keywords
       </Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={SearchStyle.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.grayDark} />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={SearchStyle.header}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={SearchStyle.backButton}
           onPress={() => navigation.goBack()}
         >
           <Icons.LeftArrow height={24} width={24} fill={Colors.white} />
         </TouchableOpacity>
 
-        <View style={styles.searchContainer}>
+        <View style={SearchStyle.searchContainer}>
           <Icons.Search height={20} width={20} fill={Colors.white} />
           <TextInput
-            style={styles.searchInput}
+            style={SearchStyle.searchInput}
             placeholder="Search doctors, specialties..."
             placeholderTextColor={Colors.neutral}
             value={searchQuery}
@@ -168,9 +168,9 @@ const Search: React.FC = () => {
       </View>
 
       {/* Results */}
-      <View style={styles.content}>
-        <View style={styles.resultsHeader}>
-          <Text style={styles.resultsText}>
+      <View style={SearchStyle.content}>
+        <View style={SearchStyle.resultsHeader}>
+          <Text style={SearchStyle.resultsText}>
             {isSearching
               ? 'Searching...'
               : `${filteredDoctors.length} doctor${
@@ -180,7 +180,7 @@ const Search: React.FC = () => {
         </View>
 
         {isSearching ? (
-          <View style={styles.loadingContainer}>
+          <View style={SearchStyle.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>
         ) : (
@@ -189,7 +189,7 @@ const Search: React.FC = () => {
             renderItem={renderDoctorItem}
             keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={SearchStyle.listContent}
             ListEmptyComponent={renderEmptyComponent}
           />
         )}
@@ -197,84 +197,5 @@ const Search: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.grayDark,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.grayMedium,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 10,
-  },
-  searchInput: {
-    flex: 1,
-    color: Colors.white,
-    fontSize: 16,
-    padding: 0,
-  },
-  content: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 20,
-  },
-  resultsHeader: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  resultsText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.grayDark,
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: Colors.grayDark,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: Colors.neutral,
-    textAlign: 'center',
-  },
-});
 
 export default Search;
