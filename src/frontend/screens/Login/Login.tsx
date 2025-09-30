@@ -103,7 +103,10 @@ const Login: React.FC = () => {
 
       if (success) {
         Alert.alert('Success', 'Welcome back!', [
-          { text: 'OK', onPress: () => navigation.navigate('MainStack') },
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('MainStack', { screen: 'Tabs' }),
+          },
         ]);
       } else {
         setErrors({ password: 'Invalid email or password' });
@@ -149,7 +152,10 @@ const Login: React.FC = () => {
 
       if (success) {
         Alert.alert('Welcome!', 'Successfully signed in with Google!', [
-          { text: 'OK', onPress: () => navigation.navigate('MainStack') },
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('MainStack', { screen: 'Tabs' }),
+          },
         ]);
       }
     } catch (error: any) {
@@ -281,7 +287,9 @@ const Login: React.FC = () => {
           <Components.FooterLink
             text="Don't have an account?"
             linkText="Sign Up"
-            onPress={() => navigation.navigate('Register')}
+            onPress={() =>
+              navigation.navigate('AuthStack', { screen: 'Register' })
+            }
             disabled={isLoading}
           />
         </ScrollView>

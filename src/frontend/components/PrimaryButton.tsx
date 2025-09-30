@@ -39,6 +39,10 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   buttonStyle,
 }) => {
   const getVariantStyle = () => {
+    if (loading) {
+      return { backgroundColor: Colors.grayDark, borderWidth: 0 };
+    }
+
     switch (variant) {
       case 'secondary':
         return { backgroundColor: Colors.grayDark, borderWidth: 0 };
@@ -77,48 +81,68 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
     }
   };
 
+  const getTextColor = () => {
+    if (disabled || loading) {
+      return Colors.white;
+    }
+    switch (variant) {
+      case 'outline':
+        return Colors.info;
+      default:
+        return Colors.white;
+    }
+  };
+
+  const getLoaderColor = () => {
+    if (variant === 'outline') {
+      return Colors.info;
+    }
+    return Colors.white;
+  };
+
   const gradientProps = getGradientProps({ x: 0, y: 0 }, { x: 1, y: 1 });
 
   const Content = () =>
     loading ? (
-      <ActivityIndicator size="small" color={Colors.white} />
+      <ActivityIndicator size="small" color={getLoaderColor()} />
     ) : (
       <View style={styles.content}>
         {leftIcon && <View style={styles.icon}>{leftIcon}</View>}
-        <Text style={[styles.text, textStyle]}>{title}</Text>
+        <Text style={[styles.text, { color: getTextColor() }, textStyle]}>
+          {title}
+        </Text>
         {rightIcon && <View style={styles.icon}>{rightIcon}</View>}
       </View>
     );
+
+  const finalButtonStyle = [
+    styles.button,
+    getSizeStyle(),
+    disabled && styles.disabled,
+    buttonStyle,
+  ];
+
+  const finalNonGradientButtonStyle = [...finalButtonStyle, getVariantStyle()];
 
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
       accessibilityRole="button"
-      style={[fullWidth && { width: '100%' }]}
+      style={[
+        fullWidth && { width: '100%' },
+        (disabled || loading) && styles.touchableDisabled,
+      ]}
     >
       {variant === 'gradient' ? (
         <LinearGradient
           {...gradientProps}
-          style={[
-            styles.button,
-            getSizeStyle(),
-            disabled && styles.disabled,
-            buttonStyle,
-          ]}
+          style={[styles.button, getSizeStyle(), buttonStyle]}
         >
           <Content />
         </LinearGradient>
       ) : (
-        <View
-          style={[
-            styles.button,
-            getVariantStyle(),
-            getSizeStyle(),
-            disabled && styles.disabled,
-            buttonStyle,
-          ]}
-        >
+        <View style={finalNonGradientButtonStyle}>
           <Content />
         </View>
       )}
@@ -136,12 +160,14 @@ const styles = StyleSheet.create({
   },
   disabled: {
     backgroundColor: Colors.grayLight,
+    borderColor: Colors.grayLight,
+  },
+  touchableDisabled: {
     opacity: 0.6,
   },
   text: {
     fontSize: moderateScale(16),
     fontWeight: '600',
-    color: Colors.white,
   },
   content: {
     flexDirection: 'row',

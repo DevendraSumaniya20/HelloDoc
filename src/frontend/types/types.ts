@@ -1,3 +1,4 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
 import type {
   NativeStackScreenProps,
   NativeStackNavigationProp,
@@ -40,8 +41,8 @@ export type MainStackParamList = {
 export type RootStackParamList = {
   Splash: undefined;
   Intro: undefined;
-  AuthStack: undefined;
-  MainStack: undefined;
+  AuthStack: NavigatorScreenParams<AuthStackParamList>;
+  MainStack: NavigatorScreenParams<MainStackParamList>;
 };
 
 // --- Extend React Navigation types globally ---
