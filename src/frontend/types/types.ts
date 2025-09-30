@@ -12,6 +12,13 @@ export type AuthStackParamList = {
   WebView: { url: string; title?: string };
 };
 
+export type TabStackParamList = {
+  Home: undefined; // The actual Home screen
+  Chat: undefined; // The actual Chat screen (with no initial params needed for the tab)
+  Setting: undefined; // The actual Setting screen
+  Search: undefined; // Optional: if Search is also a tab
+};
+
 // --------------------------------------------------------------------------
 /**
  * MAIN STACK PARAMS
