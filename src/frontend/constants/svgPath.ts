@@ -36,6 +36,9 @@ import PrivacyPolicy from '../assets/svg/privacy.svg';
 import ContactUs from '../assets/svg/contact.svg';
 import Faq from '../assets/svg/faq.svg';
 import Logout from '../assets/svg/log-out.svg';
+import ResetIcon from '../assets/svg/reset.svg';
+import Edit from '../assets/svg/edit.svg';
+import SaveIcon from '../assets/svg/save.svg';
 
 const Icons = {
   Cross,
@@ -76,6 +79,9 @@ const Icons = {
   ContactUs,
   Faq,
   Logout,
+  ResetIcon,
+  Edit,
+  SaveIcon,
 };
 
 export default Icons;

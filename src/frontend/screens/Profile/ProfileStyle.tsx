@@ -127,38 +127,83 @@ const ProfileStyle = StyleSheet.create({
     backgroundColor: '#FEF2F2', // Light Red background
     borderWidth: 1,
     borderColor: '#FCA5A5', // Soft Red border
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   resetButtonText: {
     fontSize: 14,
     color: '#DC2626', // Darker Red text
     fontWeight: '600',
-  },
-  buttonContainer: {
-    paddingHorizontal: moderateScale(16),
-    marginTop: moderateScale(20),
-  },
-  saveButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: moderateScale(16),
-    borderRadius: moderateScale(12),
     alignItems: 'center',
-    marginBottom: moderateScale(12),
-    shadowColor: Colors.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    flexDirection: 'row',
+    gap: 4,
+  },
+
+  // Button Container
+  buttonContainer: {
+    paddingHorizontal: 16,
+    marginTop: 24,
+    gap: 12,
+  },
+
+  // Save Button
+  saveButton: {
+    backgroundColor: Colors.primary || '#2563EB',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.primary || '#2563EB',
     shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   saveButtonDisabled: {
-    backgroundColor: Colors.grayLight,
+    backgroundColor: '#D1D5DB',
     shadowOpacity: 0,
     elevation: 0,
-    opacity: 0.6, // Dim the disabled button
   },
   saveButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
     color: Colors.white,
+    letterSpacing: 0.5,
+  },
+
+  // Secondary Button
+  secondaryButton: {
+    backgroundColor: Colors.white,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: Colors.primary || '#2563EB',
+  },
+  secondaryButtonText: {
     fontSize: 16,
     fontWeight: '600',
+    color: Colors.primary || '#2563EB',
+    letterSpacing: 0.5,
+  },
+
+  // Danger Button
+  dangerButton: {
+    backgroundColor: Colors.white,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#DC2626',
+  },
+  dangerButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#DC2626',
+    letterSpacing: 0.5,
   },
 });
 

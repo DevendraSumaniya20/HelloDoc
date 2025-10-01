@@ -20,9 +20,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ProfileStyle from './ProfileStyle';
 
-// import navigationStrings from '../../constants/navigationString';
+// Import your picker functions
+import { pickFromCamera, pickFromGallery } from '../../utils/mediaPicker';
+import Icons from '../../constants/svgPath';
+import { moderateScale } from '../../constants/responsive';
 
-// Define the expected structure for updating the user profile
+// --- User Profile Input Types ---
 export interface UpdateUserProfileInput {
   firstName?: string;
   lastName?: string;
@@ -30,7 +33,6 @@ export interface UpdateUserProfileInput {
   photoURL?: string;
 }
 
-// Define the structure for initial values to track changes
 interface InitialProfileValues {
   firstName: string;
   lastName: string;
@@ -39,24 +41,18 @@ interface InitialProfileValues {
 }
 
 const Profile: React.FC = () => {
-  // Destructure only the necessary functions/state from useAuth
   const { user, updateUserProfile } = useAuth();
-
-  // Use a more specific type for navigation if available, otherwise use a generic type
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
-  // State variables for form fields
   const [email, setEmail] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
   const [photoURL, setPhotoURL] = useState<string>('');
 
-  // UI state
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
-  // State to hold original values for comparison and reset
   const [initialValues, setInitialValues] = useState<InitialProfileValues>({
     firstName: '',
     lastName: '',
@@ -66,7 +62,6 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      // Use nullish coalescing for safer access and defaults
       const userEmail = user.email ?? '';
       const userFirstName = user.firstName ?? '';
       const userLastName = user.lastName ?? '';
@@ -81,13 +76,12 @@ const Profile: React.FC = () => {
       setDisplayName(userDisplayName);
       setPhotoURL(userPhotoURL);
 
-      const newInitialValues: InitialProfileValues = {
+      setInitialValues({
         firstName: userFirstName,
         lastName: userLastName,
         displayName: userDisplayName,
         photoURL: userPhotoURL,
-      };
-      setInitialValues(newInitialValues);
+      });
     }
   }, [user]);
 
@@ -108,34 +102,22 @@ const Profile: React.FC = () => {
 
     setIsLoading(true);
     const updatedData: UpdateUserProfileInput = {
-      // Use trimmed values for storage
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       displayName: displayName.trim(),
-      // Use photoURL as is (empty string means "remove" or default logic)
       photoURL,
     };
 
     try {
       await updateUserProfile(updatedData);
-
-      // Update initial values with the newly saved data
       setInitialValues({
         firstName: updatedData.firstName!,
         lastName: updatedData.lastName!,
         displayName: updatedData.displayName!,
         photoURL: updatedData.photoURL!,
       });
-      // The state variables (firstName, etc.) are implicitly updated via the useEffect
-      // triggered by the `user` object update from `updateUserProfile`.
-      // Explicitly setting them here might lead to a race condition or unnecessary render,
-      // but if the AuthContext doesn't immediately reflect the changes, they should be set
-      // to the *initial values* again. Since the useEffect runs on `user` change,
-      // we only need to update `initialValues` here.
 
-      Alert.alert('Success', 'Profile updated successfully!', [
-        { text: 'OK', style: 'default' },
-      ]);
+      Alert.alert('Success', 'Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile. Please try again.');
@@ -144,30 +126,41 @@ const Profile: React.FC = () => {
     }
   }, [firstName, lastName, displayName, photoURL, updateUserProfile]);
 
-  /**
-   * Handles the selection logic for the profile image.
-   */
+  // --- Handle Profile Image Change ---
   const handleImagePicker = useCallback((): void => {
     Alert.alert(
       'Change Profile Photo',
       'Select an option',
       [
-        { text: 'Camera', onPress: () => console.log('Camera selected') },
-        { text: 'Gallery', onPress: () => console.log('Gallery selected') },
+        {
+          text: 'Camera',
+          onPress: async () => {
+            const result = await pickFromCamera();
+            if (result) setPhotoURL(result.path);
+          },
+        },
+        {
+          text: 'Gallery',
+          onPress: async () => {
+            const result = await pickFromGallery();
+            if (result) setPhotoURL(result.path);
+          },
+        },
         {
           text: 'Remove Photo',
-          onPress: () => setPhotoURL(''), // Set to empty string for removal logic
+          onPress: () => {
+            const defaultPhotoURL =
+              'https://via.placeholder.com/120x120.png?text=Profile';
+            setPhotoURL(defaultPhotoURL);
+          },
           style: 'destructive',
         },
         { text: 'Cancel', style: 'cancel' },
       ],
       { cancelable: true },
     );
-  }, []); // Empty dependency array as setPhotoURL is stable
+  }, []);
 
-  /**
-   * Resets the form fields to their last saved initial values.
-   */
   const resetChanges = useCallback((): void => {
     setFirstName(initialValues.firstName);
     setLastName(initialValues.lastName);
@@ -175,25 +168,21 @@ const Profile: React.FC = () => {
     setPhotoURL(initialValues.photoURL);
   }, [initialValues]);
 
-  // Show nothing if the user object is not loaded (AuthContext handles navigation/loading screen)
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <SafeAreaView style={ProfileStyle.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
-
-      {/* Header with Back Button */}
+    <SafeAreaView style={ProfileStyle.container} edges={['top']}>
+      {/* Header */}
       <View style={ProfileStyle.headerContainer}>
         <TouchableOpacity
           style={ProfileStyle.backButton}
           onPress={navigation.goBack}
           activeOpacity={0.7}
-          accessible={true}
-          accessibilityLabel="Go back to previous screen"
         >
-          <Text style={ProfileStyle.backIcon}>←</Text>
+          <Icons.LeftArrow
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </TouchableOpacity>
         <View style={ProfileStyle.headerTextContainer}>
           <Text style={ProfileStyle.header}>My Profile</Text>
@@ -206,41 +195,29 @@ const Profile: React.FC = () => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Profile Image Section */}
+        {/* Profile Image */}
         <View style={ProfileStyle.profileSection}>
           <View style={ProfileStyle.profileImageWrapper}>
             <Image
               source={{ uri: photoURL }}
               style={ProfileStyle.profileImage}
-              accessibilityLabel="User profile photo"
             />
             <TouchableOpacity
               style={ProfileStyle.editIcon}
               onPress={handleImagePicker}
-              activeOpacity={0.7}
-              accessible={true}
-              accessibilityLabel="Change profile photo"
+              activeOpacity={0.8}
             >
-              <Text style={ProfileStyle.editIconText}>📷</Text>
+              <Icons.Edit
+                height={moderateScale(16)}
+                width={moderateScale(16)}
+              />
             </TouchableOpacity>
           </View>
 
-          <Text
-            style={ProfileStyle.displayNameText}
-            accessible={true}
-            accessibilityLabel={`Display name: ${
-              displayName || `${firstName} ${lastName}` || 'No Name'
-            }`}
-          >
+          <Text style={ProfileStyle.displayNameText}>
             {displayName || `${firstName} ${lastName}` || 'No Name'}
           </Text>
-          <Text
-            style={ProfileStyle.emailText}
-            accessible={true}
-            accessibilityLabel={`Email address: ${email}`}
-          >
-            {email}
-          </Text>
+          <Text style={ProfileStyle.emailText}>{email}</Text>
         </View>
 
         {/* Profile Form */}
@@ -251,9 +228,12 @@ const Profile: React.FC = () => {
               <TouchableOpacity
                 onPress={resetChanges}
                 style={ProfileStyle.resetButton}
-                accessible={true}
-                accessibilityLabel="Reset changes"
+                activeOpacity={0.7}
               >
+                <Icons.ResetIcon
+                  height={moderateScale(16)}
+                  width={moderateScale(16)}
+                />
                 <Text style={ProfileStyle.resetButtonText}>Reset</Text>
               </TouchableOpacity>
             )}
@@ -264,6 +244,7 @@ const Profile: React.FC = () => {
             placeholder="Enter your display name"
             value={displayName}
             onChangeText={setDisplayName}
+            autoCapitalize="words"
           />
 
           <InputField
@@ -283,31 +264,18 @@ const Profile: React.FC = () => {
             required
             autoCapitalize="words"
           />
-
-          {/* Email field is disabled and not editable */}
-          <InputField
-            label="Email Address"
-            value={email}
-            disabled
-            keyboardType="email-address"
-          />
         </View>
 
-        {/* Save Button (Logout button has been removed) */}
+        {/* Action Buttons */}
         <View style={ProfileStyle.buttonContainer}>
           <TouchableOpacity
             style={[
               ProfileStyle.saveButton,
-              !hasChanges && ProfileStyle.saveButtonDisabled,
+              (!hasChanges || isLoading) && ProfileStyle.saveButtonDisabled,
             ]}
             onPress={handleSave}
             disabled={!hasChanges || isLoading}
             activeOpacity={0.8}
-            accessible={true}
-            accessibilityLabel={
-              hasChanges ? 'Save changes to profile' : 'Profile is up to date'
-            }
-            accessibilityRole="button"
           >
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.white} />

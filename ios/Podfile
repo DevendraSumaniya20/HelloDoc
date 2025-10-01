@@ -6,6 +6,7 @@ def node_require(script)
   ]).strip
 end
 
+
 # Require react-native's and react-native-permissions' scripts
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
@@ -15,12 +16,27 @@ prepare_react_native_project!
 
 # Setup permissions
 setup_permissions([
-  'MediaLibrary',
-  'Microphone',
+  # 'AppTrackingTransparency',
+  # 'Bluetooth',
+  # 'Calendars',
+  # 'CalendarsWriteOnly',
+  'Camera',
+  # 'Contacts',
+  # 'FaceID',
+  # 'LocationAccuracy',
+  # 'LocationAlways',
+  # 'LocationWhenInUse',
+  # 'MediaLibrary',
+  # 'Microphone',
+  # 'Motion',
+  # 'Notifications',
   'PhotoLibrary',
   'PhotoLibraryAddOnly',
+  # 'Reminders',
+  # 'Siri',
+  # 'SpeechRecognition',
+  # 'StoreKit',
 ])
-
 # Handle use_frameworks dynamically
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
